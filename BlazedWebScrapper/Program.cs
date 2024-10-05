@@ -1,12 +1,18 @@
 using BlazedWebScrapper.Data;
+using BlazedWebScrapper.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddDbContext<WebScrapperDbContext>(
+	options => options.UseSqlServer(builder.Configuration.GetConnectionString("WebScrapper")));
+
+builder.Services.AddScoped<FlightService>();
 builder.Services.AddSingleton<WeatherForecastService>();
 
 var app = builder.Build();
