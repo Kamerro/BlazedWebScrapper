@@ -9,5 +9,23 @@ namespace BlazedWebScrapper.Entities
 		{
 
 		}
-	}
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Mapowanie TimeOnly jako TimeSpan
+            modelBuilder.Entity<FlightModel>()
+                .Property(f => f.TimeOfStartTrip)
+                .HasConversion(
+                    v => v.ToTimeSpan(),
+                    v => TimeOnly.FromTimeSpan(v)
+                );
+
+            modelBuilder.Entity<FlightModel>()
+                .Property(f => f.TimeOfEndTrip)
+                .HasConversion(
+                    v => v.ToTimeSpan(),
+                    v => TimeOnly.FromTimeSpan(v)
+                );
+        }
+    }
 }

@@ -31,7 +31,9 @@ namespace BlazedWebScrapper.Data
 				flightModels.Add(ParseFlightDetails(flightInfo));
             }
 
-            // Dodanie lotów do bazy danych
+            // Usuwanie i Dodanie lotów do bazy danych
+            var allFlights = _dbContext.FlightModels.ToList();
+            _dbContext.FlightModels.RemoveRange(allFlights);
             _dbContext.FlightModels.AddRange(flightModels);
             _dbContext.SaveChanges();
 
@@ -60,7 +62,7 @@ namespace BlazedWebScrapper.Data
 			DateOnly startDate = DateOnly.ParseExact(thereParts[2], "dd/MM/yy");
 			TimeOnly startDepartureTime = TimeOnly.ParseExact(thereParts[thereTimesIndex[0]], "HH:mm");
 			TimeOnly startArrivalTime = TimeOnly.ParseExact(thereParts[thereTimesIndex[1]], "HH:mm");
-			TimeSpan timeOfStartTrip = TimeSpan.ParseExact(thereParts[thereTimesIndex[2]], "hh\\:mm", null);
+            TimeOnly timeOfStartTrip = TimeOnly.ParseExact(thereParts[thereTimesIndex[2]], "H:mm");
 
 			string startDestination = null;
 			string endDestination = null;
@@ -88,7 +90,7 @@ namespace BlazedWebScrapper.Data
 			DateOnly endDate = DateOnly.ParseExact(backParts[2], "dd/MM/yy");
 			TimeOnly endDepartureTime = TimeOnly.ParseExact(backParts[backTimesIndex[0]], "HH:mm");
 			TimeOnly endArrivalTime = TimeOnly.ParseExact(backParts[backTimesIndex[1]], "HH:mm");
-			TimeSpan timeOfEndTrip = TimeSpan.ParseExact(backParts[backTimesIndex[2]], "hh\\:mm", null);
+            TimeOnly timeOfEndTrip = TimeOnly.ParseExact(backParts[backTimesIndex[2]], "H:mm");
 
 			float endTripPrice = float.Parse(backParts[backParts.Length - 3]);
 
