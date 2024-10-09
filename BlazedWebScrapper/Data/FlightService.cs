@@ -64,7 +64,7 @@ namespace BlazedWebScrapper.Data
             });
 
             var mailText = MailTextFormatter(cheepestFlight);
-
+			
             email.Send(
                 "Tanie loty",
                 mailText,
