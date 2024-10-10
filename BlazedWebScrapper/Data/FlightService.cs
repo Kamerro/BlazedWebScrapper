@@ -1,6 +1,8 @@
 ﻿using BlazedWebScrapper.Entities;
 using HtmlAgilityPack;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 using WebScrapper;
 
 namespace BlazedWebScrapper.Data
@@ -8,11 +10,13 @@ namespace BlazedWebScrapper.Data
     public class FlightService
 	{
 		private WebScrapperDbContext _dbContext;
+		private EmailSender _email;
 		string url = "https://www.azair.eu/azfin.php?searchtype=flexi&tp=0&isOneway=return&srcAirport=Poland+%5BSZY%5D+%28%2BKRK%2CKTW%29&srcap10=KRK&srcap11=KTW&srcFreeAirport=&srcTypedText=po&srcFreeTypedText=&srcMC=PL&dstAirport=Anywhere+%5BXXX%5D&anywhere=true&dstap0=LIN&dstap1=BGY&dstFreeAirport=&dstTypedText=xxx&dstFreeTypedText=&dstMC=&depmonth=202410&depdate=2024-10-03&aid=0&arrmonth=202412&arrdate=2024-12-31&minDaysStay=5&maxDaysStay=8&dep0=true&dep1=true&dep2=true&dep3=true&dep4=true&dep5=true&dep6=true&arr0=true&arr1=true&arr2=true&arr3=true&arr4=true&arr5=true&arr6=true&samedep=true&samearr=true&minHourStay=0%3A45&maxHourStay=23%3A20&minHourOutbound=0%3A00&maxHourOutbound=24%3A00&minHourInbound=0%3A00&maxHourInbound=24%3A00&autoprice=true&adults=1&children=0&infants=0&maxChng=1&currency=PLN&lang=en&indexSubmit=Search";
 
-        public FlightService(WebScrapperDbContext dbContext)
+        public FlightService(WebScrapperDbContext dbContext, EmailSender email)
         {
             _dbContext = dbContext;
+			_email = email;
         }
 
         public List<FlightModel> GetFlights()
@@ -37,8 +41,64 @@ namespace BlazedWebScrapper.Data
             _dbContext.FlightModels.AddRange(flightModels);
             _dbContext.SaveChanges();
 
+            // Tworzenie maila
+            List<FlightModel> cheepestFlight = null;
+
+            // LINQ
+            cheepestFlight = _dbContext
+            .FlightModels
+            .OrderBy(f => f.Price)
+            .Take(5)
+            .ToList();
+
+			var emailReceiver = "zbigniew.sr@interia.pl";
+
+            var email = new EmailSender(new EmailParams
+            {
+                HostSmtp = "poczta.interia.pl",
+                Port = 587,
+                EnableSsl = true,
+                SenderName = "Webscrapper Info",
+                SenderEmail = "webscrapper.mail@interia.pl",
+                SenderEmailPassword = "WEBscrapper123!"
+            });
+
+            var mailText = MailTextFormatter(cheepestFlight);
+			
+            email.Send(
+                "Tanie loty",
+                mailText,
+                emailReceiver);
+
             return _dbContext.FlightModels.ToList(); // użycie asynchronicznej metody
         }
+
+
+        //public async Task<string> ProcessInput(string inputText)
+        //{
+            
+        //}
+
+        public string MailTextFormatter(List<FlightModel> flights)
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.Append("Propozycje tanich lotów na dziś<br><br>");
+
+			foreach (var flight in flights)
+			{
+				sb.Append(String.Format("Wylot: {0} ==> {1} <br>[{7}] {2} ==> {3} <br>Powrót: {1} ==> {0} <br>[{8}] {4} ==> {5} <br>Cena: {6}zł<br><br>",
+					flight.StartDestination,
+					flight.EndDestination,
+					flight.StartTripDeparture,
+					flight.StartTripArrival,
+					flight.EndTripDeparture,
+					flight.EndTripDeparture,
+					flight.Price,
+					flight.StartTripDayOfWeek,
+					flight.EndTripDayOfWeek));
+			}
+			return sb.ToString();
+		}
 
 		public FlightModel ParseFlightDetails(FlightInfo flightDetails)
 		{

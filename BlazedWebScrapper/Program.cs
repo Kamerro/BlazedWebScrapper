@@ -13,6 +13,7 @@ builder.Services.AddDbContext<WebScrapperDbContext>(
 	options => options.UseSqlServer(builder.Configuration.GetConnectionString("WebScrapper")));
 
 builder.Services.AddScoped<FlightService>();
+builder.Services.AddScoped<EmailSender>();
 builder.Services.AddSingleton<WeatherForecastService>();
 
 var app = builder.Build();

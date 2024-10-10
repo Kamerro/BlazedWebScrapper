@@ -5,8 +5,16 @@
 
 <PageTitle>Loty</PageTitle>
 
+@* <p>Wpisz swój email, a wyślemy na niego najkorzystniejsze oferty lotów: @result</p>
+<!-- Pole tekstowe, gdzie użytkownik wprowadza tekst -->
+<input @bind="inputText" placeholder="Wpisz e-mail" />
 
-<p>This component demonstrates fetching data from a service.</p>
+<!-- Przycisk, który wywołuje metodę przesyłania danych -->
+<button @onclick="SubmitData">Prześlij</button>
+
+<!-- Wyświetlenie przesłanego tekstu --> *@
+
+
 
 @if (flights == null)
 {
@@ -50,4 +58,17 @@ else
     {
         flights = FlightService.GetFlights();
     }
+
+    // // Zmienna, która przechowuje wprowadzony tekst
+    // private string inputText = string.Empty;
+
+    // // Zmienna do wyświetlenia przesłanego tekstu
+    // private string result;
+
+    // // Metoda do przetwarzania danych
+    // private void SubmitData()
+    // {
+    //     // Tutaj możesz przesłać tekst dalej do logiki, np. do serwisu lub API
+    //     result = inputText;
+    // }
 }
