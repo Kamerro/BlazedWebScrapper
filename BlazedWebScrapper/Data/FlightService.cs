@@ -15,7 +15,7 @@ namespace BlazedWebScrapper.Data
             _dbContext = dbContext;
         }
 
-        public async Task<List<FlightModel>> GetFlightsAsync()
+        public List<FlightModel> GetFlights()
         {
 			var web = new HtmlWeb();
 			var document = web.Load(url);
@@ -37,7 +37,7 @@ namespace BlazedWebScrapper.Data
             _dbContext.FlightModels.AddRange(flightModels);
             _dbContext.SaveChanges();
 
-            return await _dbContext.FlightModels.ToListAsync(); // użycie asynchronicznej metody
+            return _dbContext.FlightModels.ToList(); // użycie asynchronicznej metody
         }
 
 		public FlightModel ParseFlightDetails(FlightInfo flightDetails)

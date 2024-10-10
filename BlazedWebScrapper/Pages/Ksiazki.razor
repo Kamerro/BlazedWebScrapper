@@ -1,0 +1,51 @@
+﻿@page "/ksiegarnia"
+@using BlazedWebScrapper.Data;
+@using BlazedWebScrapper.Pages.RazorComponents;
+<PageTitle>Ksiegarnia</PageTitle>
+
+<h1>Tutaj książki</h1>
+
+<button onclick="@(()=> {click = "Lol ale troll";})"> @((MarkupString)click) </button>
+<h2>@siemaEniu + @(2+2)</h2>
+
+@if(number == 10)
+{
+    <p>Number is 10</p>
+}
+else
+{
+    <p>number is not 10</p>
+}
+
+<input type="checkbox" name="this" onclick="@TrueOrFalse"/>
+
+@foreach (var client in clients)
+{
+    @if (!value)
+    {
+        <ClientComponent client="client"></ClientComponent>
+    }
+
+}
+<InputComponent placeholder="Placeholder 01" type="text" disabled ="true" ></InputComponent>
+
+
+@code{
+    public List<Client> clients;
+    public string click = "<b>Click<b>";
+    public string siemaEniu = "Eniu hej ";
+    public int number = 1;
+    public bool value = false;
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        clients = new List<Client>() {
+        new Client() {
+            Name = "First", ID = "01" },
+       new Client() { Name = "Sec", ID = "02" } };
+    }
+    public void TrueOrFalse()
+    {
+        value = !value;
+    }
+}

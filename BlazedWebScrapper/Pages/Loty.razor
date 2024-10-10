@@ -46,8 +46,8 @@ else
 @code {
     private List<FlightModel> flights;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        flights = await FlightService.GetFlightsAsync();
+        flights = FlightService.GetFlights();
     }
 }
