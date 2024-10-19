@@ -51,27 +51,26 @@ else
 }*@
 <body>
     <div>
-    <div>
-        <div style="width:100%;height:50px;text-align:center;">
-            <h2>Witaj dobry człowieku tutaj możesz wyszukać książki!</h2>
+        <div>
+            <div style="width:100%;height:50px;text-align:center;">
+                <h2>Witaj dobry człowieku tutaj możesz wyszukać książki!</h2>
+            </div>
+            <div style="height:10px;width:100%">
+            </div>
+            <div style="margin-left:30%;width:100%">
+                <input type="text" style="width:30%;height:60px; margin-bottom:30px" placeholder="@Author @Title" />
+                <button type="button" @onclick="searchText"><img src="css/open-iconic/font/fonts/searchIcon.png"></button>
+            </div>
         </div>
-        <div style="height:10px;width:100%">
-        </div>
-        <div style="margin-left:30%;width:100%">
-            <input type="text" style="width:30%;height:60px; margin-bottom:30px" placeholder="@Author @Title"/>
-            <button type="button" @onclick="searchText"><img src="css/open-iconic/font/fonts/searchIcon.png"></button>
-        </div>
-    </div>
-    <div>
-        <h3>Lub wybierz z proponowanych:</h3>
+        <div>
+            <h3>Lub wybierz z proponowanych:</h3>
             <table style="text-align:center;">
                 <tr>
                     <th>Autor</th>
                     <th>Tytuł</th>
                 </tr>
                 <tr>
-                    <td 
-                        @onclick="() => setAuthor(GabrielGarciaMarquez)"
+                    <td @onclick="() => setAuthor(GabrielGarciaMarquez)"
                         @onmouseover="changeColor" @onmouseleave="changeColorBack"
                         style="background-color:@tileColor">
                         Gabriel García Márquez
@@ -96,7 +95,7 @@ else
                     <td>Opowieść Podręcznej</td>
                 </tr>
             </table>
-    </div>
+        </div>
     </div>
 </body>
 
@@ -133,12 +132,37 @@ else
         string test = "https://czytelnik.pl/pl/c/Ksiegarnia/47";
         var web = new HtmlWeb();
         var doc = web.Load(test);
-        var nodes = doc.DocumentNode.Descendants("div").ToList();
-        var innerHtml = doc.DocumentNode.InnerHtml;     
+        var nodes = doc.DocumentNode.Descendants("a")?.Where(x =>
+           x.Attributes["class"] is not null && x.Attributes["class"].Value == "prodname f-row"
+        //  &&  x.Attributes["title"].Value == "Braterstwo Broni. Wsparcie wojskowe Francji dla Polski 1917-1924"
+        )?.ToList();
+
+
+        var nodesProducts = doc.DocumentNode.Descendants("div")?.Where(x =>
+       x.Attributes["class"] is not null && x.Attributes["class"].Value == "product s-grid-3 product-main-wrap"
+    //  &&  x.Attributes["title"].Value == "Braterstwo Broni. Wsparcie wojskowe Francji dla Polski 1917-1924"
+    )?.ToList();
+
+        List<HtmlNode> nodesNamesA = new List<HtmlNode>();
+        nodesProducts.ForEach(x => nodesNamesA.AddRange(x.Descendants("a").Where(y =>
+        y.Attributes["class"] is not null && y.Attributes["class"].Value == "prodname f-row")));
+        List<HtmlNode> Books = doc.DocumentNode.Descendants("span").Where(x =>
+       x.Attributes["class"] is not null && x.Attributes["class"].Value == "productname").ToList();
+        List<string> booksNames = new List<string>();
+        Books.ForEach(x => booksNames.Add(x.InnerHtml));
+        List<HtmlNode> nodePricesDiv = new List<HtmlNode>();
+        nodesProducts.ForEach(x => nodePricesDiv.AddRange(x.Descendants("div").Where(y =>
+        y.Attributes["class"] is not null && y.Attributes["class"].Value == "price f-row")));
+        List<HtmlNode> nodePricesValue = new List<HtmlNode>();
+        nodePricesDiv.ForEach(x => nodePricesValue.Add(x.Descendants("em").First()));
+
+        List<string> pricePerBook = new List<string>();
+        nodePricesValue.ForEach(x => pricePerBook.Add(x.InnerHtml));
+        //  &&  x.Attributes["title"].Value == "Braterstwo Broni. Wsparcie wojskowe Francji dla Polski 1917-1924"
+
+
+
+        var innerHtml = doc.DocumentNode.InnerHtml;
         var innerText = doc.DocumentNode.InnerText;
-        var doce = new HtmlDocument();
-        //.Select(y => y.Descendants()
-     //.Where(x => x.Attributes["class"].Value == "ProductCard ProductCard_layout_grid ProductCard_isProductOtherEdition "))
-     //.ToList();
     }
 }
