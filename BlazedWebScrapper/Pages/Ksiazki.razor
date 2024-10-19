@@ -1,5 +1,6 @@
 ﻿@page "/ksiegarnia"
 @using BlazedWebScrapper.Data;
+@using HtmlAgilityPack;
 @*<PageTitle>Ksiegarnia</PageTitle>
 
 <h1>Tutaj książki</h1>
@@ -101,7 +102,11 @@ else
 
 @code {
     public string tileColor = "black";
-
+    //Wydawnictwoniezwykle.
+    //ksiegarnia.pwn.pl
+    //nk.com.pl
+    //albatros (ciężkie)
+    //czytelnik.pl/
     public string Author = "hehe";
     public string StoLatSamotnosci = "Sto lat samotności";
     public string Title = "heheh";
@@ -125,5 +130,15 @@ else
     void searchText()
     {
         string fullText = Author + Title;
+        string test = "https://czytelnik.pl/pl/c/Ksiegarnia/47";
+        var web = new HtmlWeb();
+        var doc = web.Load(test);
+        var nodes = doc.DocumentNode.Descendants("div").ToList();
+        var innerHtml = doc.DocumentNode.InnerHtml;     
+        var innerText = doc.DocumentNode.InnerText;
+        var doce = new HtmlDocument();
+        //.Select(y => y.Descendants()
+     //.Where(x => x.Attributes["class"].Value == "ProductCard ProductCard_layout_grid ProductCard_isProductOtherEdition "))
+     //.ToList();
     }
 }
