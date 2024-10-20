@@ -35,7 +35,7 @@ namespace BlazedWebScrapper.Data
 
 				var flightInfo = ThereBackFlightParser.GetFlightInfo(divText);
 				//flightModels.Add(ParseFlightDetails(flightInfo));
-				flightModels.Add(FlightModelParser.Parse(flightInfo));
+				flightModels.Add(flightInfo.Parse());
             }
 
             // Usuwanie i Dodanie lotów do bazy danych
