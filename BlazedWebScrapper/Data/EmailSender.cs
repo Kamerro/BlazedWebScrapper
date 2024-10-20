@@ -11,37 +11,34 @@ namespace BlazedWebScrapper.Data
         private SmtpClient _smtp;
         private MailMessage _mail;
 
-        private string _hostSmtp;
-        private bool _enableSsl;
-        private int _port;
-        private string _senderEmail;
-        private string _senderEmailPassword;
-        private string _senderName;
+        private EmailParams _emailParams { get; set; }
 
+        // podstawowy konstruktor
         public EmailSender()
         {
-            _hostSmtp = "poczta.interia.pl";
-            _port = 587;
-            _enableSsl = true;
-            _senderName = "Webscrapper Info";
-            _senderEmail = "webscrapper.mail@interia.pl";
-            _senderEmailPassword = "WEBscrapper123!";
+            EmailParams emailParams = new EmailParams()
+            {
+                HostSmtp = "poczta.interia.pl",
+                Port = 587,
+                EnableSsl = true,
+                SenderName = "Webscrapper Info",
+                SenderEmail = "webscrapper.mail@interia.pl",
+                SenderEmailPassword = "WEBscrapper123!"
+            };
+
+            _emailParams = emailParams;
         }
 
+        // nadpisany konstruktor
         public EmailSender(EmailParams emailParams)
         {
-            _hostSmtp = emailParams.HostSmtp;
-            _enableSsl = emailParams.EnableSsl;
-            _port = emailParams.Port;
-            _senderEmail = emailParams.SenderEmail;
-            _senderEmailPassword = emailParams.SenderEmailPassword;
-            _senderName = emailParams.SenderName;
+            _emailParams = emailParams;
         }
 
         public async Task Send(string subject, string body, string to)
         {
             _mail = new MailMessage();
-            _mail.From = new MailAddress(_senderEmail, _senderName);
+            _mail.From = new MailAddress(_emailParams.SenderEmail, _emailParams.SenderName);
             _mail.To.Add(new MailAddress(to));
             _mail.IsBodyHtml = true;
             _mail.Subject = subject;
@@ -51,12 +48,12 @@ namespace BlazedWebScrapper.Data
 
             _smtp = new SmtpClient
             {
-                Host = _hostSmtp,
-                EnableSsl = _enableSsl,
-                Port = _port,
+                Host = _emailParams.HostSmtp,
+                EnableSsl = _emailParams.EnableSsl,
+                Port = _emailParams.Port,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(_senderEmail, _senderEmailPassword)
+                Credentials = new NetworkCredential(_emailParams.SenderEmail, _emailParams.SenderEmailPassword)
             };
 
             _smtp.SendCompleted += OnSendCompleted;
