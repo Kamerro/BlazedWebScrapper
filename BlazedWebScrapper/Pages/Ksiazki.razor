@@ -59,7 +59,7 @@ else
             </div>
             <div style="margin-left:30%;width:100%">
                 <input type="text" style="width:30%;height:60px; margin-bottom:30px" placeholder="@Author @Title" />
-                <button type="button" @onclick="searchText"><img src="css/open-iconic/font/fonts/searchIcon.png"></button>
+                <button type="button" @onclick="() => searchPredefinedBook(Mroz)"><img src="css/open-iconic/font/fonts/searchIcon.png"></button>
             </div>
         </div>
         <div>
@@ -101,15 +101,23 @@ else
 
 @code {
     public string tileColor = "black";
+    public string Mroz = "Mroz";
     //Wydawnictwoniezwykle.
     //ksiegarnia.pwn.pl
     //nk.com.pl
     //albatros (ciężkie)
     //czytelnik.pl/
-    public string Author = "hehe";
+    string Author = "";
     public string StoLatSamotnosci = "Sto lat samotności";
-    public string Title = "heheh";
+    string Title = "";
     public string GabrielGarciaMarquez = "Gabriel Garcia Marquez";
+    public string fullPredefined = String.Empty;
+    void searchPredefinedBook(string book)
+    {
+        fullPredefined = book;
+        searchText();
+
+    }
     void setAuthor(string author)
     {
         Author = author;
@@ -126,43 +134,41 @@ else
     {
         tileColor = "black";
     }
+
     void searchText()
     {
-        string fullText = Author + Title;
-        string test = "https://czytelnik.pl/pl/c/Ksiegarnia/47";
-        var web = new HtmlWeb();
-        var doc = web.Load(test);
-        var nodes = doc.DocumentNode.Descendants("a")?.Where(x =>
-           x.Attributes["class"] is not null && x.Attributes["class"].Value == "prodname f-row"
-        //  &&  x.Attributes["title"].Value == "Braterstwo Broni. Wsparcie wojskowe Francji dla Polski 1917-1924"
-        )?.ToList();
+    string fullText = Author + Title;
+    string test = $"https://czytelnik.pl/pl/searchquery/{fullPredefined}/1/phot/5?url={fullPredefined}";
+    var web = new HtmlWeb();
+    var doc = web.Load(test);
+    var nodes = doc.DocumentNode.Descendants("a")?.Where(x =>
+       x.Attributes["class"] is not null && x.Attributes["class"].Value == "prodname f-row"
+    //  &&  x.Attributes["title"].Value == "Braterstwo Broni. Wsparcie wojskowe Francji dla Polski 1917-1924"
+    )?.ToList();
 
-
-        var nodesProducts = doc.DocumentNode.Descendants("div")?.Where(x =>
+    var nodesProducts = doc.DocumentNode.Descendants("div")?.Where(x =>
        x.Attributes["class"] is not null && x.Attributes["class"].Value == "product s-grid-3 product-main-wrap"
     //  &&  x.Attributes["title"].Value == "Braterstwo Broni. Wsparcie wojskowe Francji dla Polski 1917-1924"
     )?.ToList();
 
-        List<HtmlNode> nodesNamesA = new List<HtmlNode>();
-        nodesProducts.ForEach(x => nodesNamesA.AddRange(x.Descendants("a").Where(y =>
-        y.Attributes["class"] is not null && y.Attributes["class"].Value == "prodname f-row")));
-        List<HtmlNode> Books = doc.DocumentNode.Descendants("span").Where(x =>
+    List<HtmlNode> nodesNamesA = new List<HtmlNode>();
+    nodesProducts.ForEach(x => nodesNamesA.AddRange(x.Descendants("a").Where(y =>
+
+    y.Attributes["class"] is not null && y.Attributes["class"].Value == "prodname f-row")));
+    List<HtmlNode> Books = doc.DocumentNode.Descendants("span").Where(x =>
        x.Attributes["class"] is not null && x.Attributes["class"].Value == "productname").ToList();
-        List<string> booksNames = new List<string>();
-        Books.ForEach(x => booksNames.Add(x.InnerHtml));
-        List<HtmlNode> nodePricesDiv = new List<HtmlNode>();
-        nodesProducts.ForEach(x => nodePricesDiv.AddRange(x.Descendants("div").Where(y =>
-        y.Attributes["class"] is not null && y.Attributes["class"].Value == "price f-row")));
-        List<HtmlNode> nodePricesValue = new List<HtmlNode>();
-        nodePricesDiv.ForEach(x => nodePricesValue.Add(x.Descendants("em").First()));
+    List<string> booksNames = new List<string>();
+    Books.ForEach(x => booksNames.Add(x.InnerHtml));
+    List<HtmlNode> nodePricesDiv = new List<HtmlNode>();
+    nodesProducts.ForEach(x => nodePricesDiv.AddRange(x.Descendants("div").Where(y =>
 
-        List<string> pricePerBook = new List<string>();
-        nodePricesValue.ForEach(x => pricePerBook.Add(x.InnerHtml));
-        //  &&  x.Attributes["title"].Value == "Braterstwo Broni. Wsparcie wojskowe Francji dla Polski 1917-1924"
+    y.Attributes["class"] is not null && y.Attributes["class"].Value == "price f-row")));
+    List<HtmlNode> nodePricesValue = new List<HtmlNode>();
+    nodePricesDiv.ForEach(x => nodePricesValue.Add(x.Descendants("em").First()));
 
+    List<string> pricePerBook = new List<string>();
+    nodePricesValue.ForEach(x => pricePerBook.Add(x.InnerHtml));
+    //  &&  x.Attributes["title"].Value == "Braterstwo Broni. Wsparcie wojskowe Francji dla Polski 1917-1924"
 
-
-        var innerHtml = doc.DocumentNode.InnerHtml;
-        var innerText = doc.DocumentNode.InnerText;
     }
 }
