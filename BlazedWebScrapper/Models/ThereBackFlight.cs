@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace WebScrapper
 {
-	public class FlightInfo
+	public class ThereBackFlight
 	{
-        public FlightInfo(string there, string back)
+        public ThereBackFlight(string there, string back)
         {
             There = there;
             Back = back;
