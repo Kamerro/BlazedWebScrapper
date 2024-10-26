@@ -2,9 +2,13 @@
 @using BlazedWebScrapper.Data;
 @using HtmlAgilityPack;
 @using BlazedWebScrapper.Pages.Components;
+@using System.Drawing;
 @inject IBasicWebScrapperSite webScrapperImplementation
 @inject TabConfigurator tabConfigurator
 @inject ConstsBookScrapper consts
+@inject Book searchBook
+@inject List<Book> listOfBooks
+
 <body>
     <SampleComponent MyProperty=":D" Action=@KeepInMindSafety></SampleComponent>
     <div>
@@ -15,7 +19,7 @@
             <div style="height:10px;width:100%">
             </div>
             <div style="margin-left:30%;width:100%">
-                <input type="text" style="width:30%;height:60px; margin-bottom:30px" placeholder="@Author @Title" />
+                <input type="text" style="width:30%;height:60px; margin-bottom:30px" placeholder="@searchBook.Author.Name @searchBook.Title" />
                 <button type="button" @onclick="() => searchPredefinedBook(Mroz)"><img src="css/open-iconic/font/fonts/searchIcon.png"></button>
             </div>
         </div>
@@ -26,31 +30,20 @@
                     <th>Autor</th>
                     <th>Tytuł</th>
                 </tr>
+                @foreach(var line in listOfBooks)
+                {
                 <tr>
-                    <td @onclick="() => setAuthor(GabrielGarciaMarquez)"
+                    <td @onclick="() => setAuthor(line.Author.Name)"
                         @onmouseover="changeColor" @onmouseleave="changeColorBack"
                         style="background-color:@tabConfigurator.TileColor">
-                        Gabriel García Márquez
+                        <h4>@line.Author.Name</h4>
                     </td>
 
-                    <td @onclick="() => setTitle(StoLatSamotnosci)">Sto lat samotności</td>
+                    <td @onclick="() => setTitle(line.Title)">
+                        <h4>@line.Title</h4>
+                    </td>
                 </tr>
-                <tr>
-                    <td>George Orwell</td>
-                    <td>Rok 1984</td>
-                </tr>
-                <tr>
-                    <td>J.R.R. Tolkien</td>
-                    <td>Władca Pierścieni: Drużyna Pierścienia</td>
-                </tr>
-                <tr>
-                    <td>Haruki Murakami</td>
-                    <td>Kafka nad morzem</td>
-                </tr>
-                <tr>
-                    <td>Margaret Atwood</td>
-                    <td>Opowieść Podręcznej</td>
-                </tr>
+                }
             </table>
         </div>
     </div>
@@ -63,10 +56,6 @@
     //nk.com.pl
     //albatros (ciężkie)
     //czytelnik.pl/
-    string Author = "";
-    public string StoLatSamotnosci = "Sto lat samotności";
-    string Title = "";
-    public string GabrielGarciaMarquez = "Gabriel Garcia Marquez";
     public string fullPredefined = String.Empty;
     string KeepInMindSafety()
     {
@@ -80,24 +69,25 @@
     }
     void setAuthor(string author)
     {
-        Author = author;
+        searchBook.Author.Name = author;
     }
     void setTitle(string title)
     {
-        Title = title;
+        searchBook.Title= title;
     }
     void changeColor()
     {
-        tabConfigurator.TileColor = "Black";
+        tabConfigurator.TileColor = Color.Black.Name;
     }
     void changeColorBack()
     {
-        tabConfigurator.TileColor = "Green";
+        tabConfigurator.TileColor = Color.Green.Name;
 
     }
     protected override void OnInitialized()
     {
-        tabConfigurator.TileColor = "Green";
+        tabConfigurator.TileColor = Color.Green.Name;
+        listOfBooks.InitializeBooks();
     }
     void searchText()
     {

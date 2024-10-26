@@ -10,6 +10,10 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<IBasicWebScrapperSite,WebScrapperImplementation>();
 builder.Services.AddSingleton<TabConfigurator>();
 builder.Services.AddSingleton<ConstsBookScrapper>();
+builder.Services.AddTransient<Book>();
+builder.Services.AddSingleton<List<Book>>();
+
+
 
 var app = builder.Build();
 
