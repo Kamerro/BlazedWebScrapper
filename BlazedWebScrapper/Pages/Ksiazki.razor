@@ -1,60 +1,17 @@
 ﻿@page "/ksiegarnia"
 @using BlazedWebScrapper.Data;
 @using HtmlAgilityPack;
-@*<PageTitle>Ksiegarnia</PageTitle>
-
-<h1>Tutaj książki</h1>
-
-<button onclick="@(()=> {click = "Lol ale troll";})"> @((MarkupString)click) </button>
-<h2>@siemaEniu + @(2+2)</h2>
-
-@if(number == 10)
-{
-    <p>Number is 10</p>
-}
-else
-{
-    <p>number is not 10</p>
-}
-
-<input type="checkbox" name="this" onclick="@TrueOrFalse"/>
-
-@foreach (var client in clients)
-{
-    @if (!value)
-    {
-        <ClientComponent client="client"></ClientComponent>
-    }
-
-}
-<InputComponent placeholder="Placeholder 01" type="text" disabled ="true" ></InputComponent>
-
-
-@code{
-    public List<Client> clients;
-    public string click = "<b>Click<b>";
-    public string siemaEniu = "Eniu hej ";
-    public int number = 1;
-    public bool value = false;
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        clients = new List<Client>() {
-        new Client() {
-            Name = "First", ID = "01" },
-       new Client() { Name = "Sec", ID = "02" } };
-    }
-    public void TrueOrFalse()
-    {
-        value = !value;
-    }
-}*@
+@using BlazedWebScrapper.Pages.Components;
+@inject IBasicWebScrapperSite webScrapperImplementation
+@inject TabConfigurator tabConfigurator
+@inject ConstsBookScrapper consts
 <body>
+    <SampleComponent MyProperty=":D" Action=@KeepInMindSafety></SampleComponent>
     <div>
         <div>
             <div style="width:100%;height:50px;text-align:center;">
                 <h2>Witaj dobry człowieku tutaj możesz wyszukać książki!</h2>
-            </div>
+            </div
             <div style="height:10px;width:100%">
             </div>
             <div style="margin-left:30%;width:100%">
@@ -72,7 +29,7 @@ else
                 <tr>
                     <td @onclick="() => setAuthor(GabrielGarciaMarquez)"
                         @onmouseover="changeColor" @onmouseleave="changeColorBack"
-                        style="background-color:@tileColor">
+                        style="background-color:@tabConfigurator.TileColor">
                         Gabriel García Márquez
                     </td>
 
@@ -100,7 +57,6 @@ else
 </body>
 
 @code {
-    public string tileColor = "black";
     public string Mroz = "Mroz";
     //Wydawnictwoniezwykle.
     //ksiegarnia.pwn.pl
@@ -112,6 +68,10 @@ else
     string Title = "";
     public string GabrielGarciaMarquez = "Gabriel Garcia Marquez";
     public string fullPredefined = String.Empty;
+    string KeepInMindSafety()
+    {
+        return "Keep in mind safety dude";
+    }
     void searchPredefinedBook(string book)
     {
         fullPredefined = book;
@@ -128,47 +88,32 @@ else
     }
     void changeColor()
     {
-        tileColor = "brown";
+        tabConfigurator.TileColor = "Black";
     }
     void changeColorBack()
     {
-        tileColor = "black";
-    }
+        tabConfigurator.TileColor = "Green";
 
+    }
+    protected override void OnInitialized()
+    {
+        tabConfigurator.TileColor = "Green";
+    }
     void searchText()
     {
-    string fullText = Author + Title;
-    string test = $"https://czytelnik.pl/pl/searchquery/{fullPredefined}/1/phot/5?url={fullPredefined}";
-    var web = new HtmlWeb();
-    var doc = web.Load(test);
-    var nodes = doc.DocumentNode.Descendants("a")?.Where(x =>
-       x.Attributes["class"] is not null && x.Attributes["class"].Value == "prodname f-row"
-    //  &&  x.Attributes["title"].Value == "Braterstwo Broni. Wsparcie wojskowe Francji dla Polski 1917-1924"
-    )?.ToList();
+        webScrapperImplementation.SiteName = $"https://czytelnik.pl/pl/searchquery/{fullPredefined}/1/phot/5?url={fullPredefined}";
+        string test = webScrapperImplementation.SiteName;
+        var web = new HtmlWeb();
+        var doc = web.Load(test);
+        var nodesProducts = webScrapperImplementation.AllNodes(doc,consts.ProductWrapper,
+                                                                   consts.ClassAttribute,
+                                                                   consts.ATag);
+        var Books = webScrapperImplementation.AllNodes(doc,"productname","class","span");
+        List<string> booksNames = webScrapperImplementation.GetNamesFromNodes(Books);
+        List<HtmlNode> nodePricesDiv = webScrapperImplementation.AllNodes(doc, "price f-row", "class", "div");
+        List<HtmlNode> nodePricesValue = webScrapperImplementation.GetFirstDescendant(nodePricesDiv,"em");
 
-    var nodesProducts = doc.DocumentNode.Descendants("div")?.Where(x =>
-       x.Attributes["class"] is not null && x.Attributes["class"].Value == "product s-grid-3 product-main-wrap"
-    //  &&  x.Attributes["title"].Value == "Braterstwo Broni. Wsparcie wojskowe Francji dla Polski 1917-1924"
-    )?.ToList();
-
-    List<HtmlNode> nodesNamesA = new List<HtmlNode>();
-    nodesProducts.ForEach(x => nodesNamesA.AddRange(x.Descendants("a").Where(y =>
-
-    y.Attributes["class"] is not null && y.Attributes["class"].Value == "prodname f-row")));
-    List<HtmlNode> Books = doc.DocumentNode.Descendants("span").Where(x =>
-       x.Attributes["class"] is not null && x.Attributes["class"].Value == "productname").ToList();
-    List<string> booksNames = new List<string>();
-    Books.ForEach(x => booksNames.Add(x.InnerHtml));
-    List<HtmlNode> nodePricesDiv = new List<HtmlNode>();
-    nodesProducts.ForEach(x => nodePricesDiv.AddRange(x.Descendants("div").Where(y =>
-
-    y.Attributes["class"] is not null && y.Attributes["class"].Value == "price f-row")));
-    List<HtmlNode> nodePricesValue = new List<HtmlNode>();
-    nodePricesDiv.ForEach(x => nodePricesValue.Add(x.Descendants("em").First()));
-
-    List<string> pricePerBook = new List<string>();
-    nodePricesValue.ForEach(x => pricePerBook.Add(x.InnerHtml));
-    //  &&  x.Attributes["title"].Value == "Braterstwo Broni. Wsparcie wojskowe Francji dla Polski 1917-1924"
-
+        List<string> pricePerBook = webScrapperImplementation.GetNamesFromNodes(nodePricesValue);
     }
+    
 }
