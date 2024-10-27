@@ -25,26 +25,7 @@
         </div>
         <div>
             <h3>Lub wybierz z proponowanych:</h3>
-            <table style="text-align:center;">
-                <tr>
-                    <th>Autor</th>
-                    <th>Tytuł</th>
-                </tr>
-                @foreach(var line in listOfBooks)
-                {
-                <tr>
-                    <td @onclick="() => setAuthor(line.Author.Name)"
-                        @onmouseover="changeColor" @onmouseleave="changeColorBack"
-                        style="background-color:@tabConfigurator.TileColor">
-                        <h4>@line.Author.Name</h4>
-                    </td>
-
-                    <td @onclick="() => setTitle(line.Title)">
-                        <h4>@line.Title</h4>
-                    </td>
-                </tr>
-                }
-            </table>
+            <Table ListOfBooks="listOfBooks" SetAuthor="setAuthor" tileColor="tabConfigurator.TileColor" SetTitle="setTitle"></Table>
         </div>
     </div>
 </body>

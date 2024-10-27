@@ -1,0 +1,76 @@
+﻿@using BlazedWebScrapper.Data;
+<table style="text-align:center;">
+    <tr>
+        <th>Autor</th>
+        <th>Tytuł</th>
+    </tr>
+    @if (isInitialized)
+    {
+        for (int id = 0; id < ListOfBooks.Count; id++)
+        {
+            var line = ListOfBooks[id];
+            <tr>
+                <td @onclick="async () => await SetAuthor.InvokeAsync(line.Author.Name)"
+            @onmouseover="@(async () => await ChangeColor(id))"
+            @onmouseleave="@(() => ChangeColorBack(id))"
+                    style="background-color:@listOfCellsColorsAuthors[id]">
+                    <h4>@line.Author.Name @listOfCellsColorsAuthors[id]</h4>
+                </td>
+
+                <td @onclick="async () => await SetTitle.InvokeAsync(line.Title)">
+                    <h4>@line.Title</h4>
+                </td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="2">Loading...</td>
+        </tr>
+    }
+</table>
+
+@code {
+    [Parameter]
+    public List<Book> ListOfBooks { get; set; }
+
+    [Parameter]
+    public EventCallback<string> SetAuthor { get; set; }
+
+    [Parameter]
+    public EventCallback<string> SetTitle { get; set; }
+
+    public List<string> listOfCellsColorsAuthors = new List<string>();
+    public bool isInitialized = false;
+
+    private async Task ChangeColor(int id)
+    {
+        if (id >= 0 && id < listOfCellsColorsAuthors.Count)
+        {
+           listOfCellsColorsAuthors[id] = "Green";
+        }
+    }
+
+    private void ChangeColorBack(int id)
+    {
+        if (id >= 0 && id < listOfCellsColorsAuthors.Count)
+        {
+            listOfCellsColorsAuthors[id] = "Black";
+        }
+    }
+
+    public List<string> InitializeListOfStringsForAuthors()
+    {
+        return Enumerable.Repeat("Black", ListOfBooks.Count).ToList();
+    }
+
+    protected override void OnInitialized()
+    {
+        if (ListOfBooks != null)
+        {
+            listOfCellsColorsAuthors = InitializeListOfStringsForAuthors();
+            isInitialized = true;
+        }
+    }
+}
