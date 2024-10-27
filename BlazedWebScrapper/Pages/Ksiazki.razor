@@ -15,6 +15,8 @@
         <div>
             @if (isSearchDone)
             {
+                //Tutaj powinna być jakaś lista książek które można znaleźć na internecie wraz z linkami. 
+                //Zamiast przekazywać czytelnikSearcher powinna być przekazana lista obiektów, nawet rozszerzona.
                 <TableResult BooksNames="czytelnikSearcher.BooksNames" PricePerBook="czytelnikSearcher.PricePerBook"></TableResult>
             }
         </div>
@@ -32,6 +34,8 @@
     bool isSearchDone = false;
     void SearchPredefinedBook()
     {
+        //Dla każdego portalu powinno być wykonywane poniższe, w search text powinien być wykonany zapis książek do listy obiektów.
+        //Można dodać factory wzorzec żeby po stringu przekazywać jaki searcher jest wywoływany.
         webScrapperImplementation.FullUrlToReadFrom = czytelnikSearcher.BuildFullUrlToSearch(query, inputValue, searchBook.Author.Name, searchBook.Title);
         searchText(); 
     }
