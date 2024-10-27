@@ -11,7 +11,8 @@ builder.Services.AddSingleton<IBasicWebScrapperSite,WebScrapperImplementation>()
 builder.Services.AddSingleton<TabConfigurator>();
 builder.Services.AddSingleton<ConstsBookScrapper>();
 builder.Services.AddTransient<Book>();
-builder.Services.AddSingleton<List<Book>>();
+builder.Services.AddTransient<List<Book>>();
+builder.Services.AddSingleton<Query>();
 
 
 

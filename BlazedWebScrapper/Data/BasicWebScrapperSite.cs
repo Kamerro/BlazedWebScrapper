@@ -7,7 +7,7 @@ namespace BlazedWebScrapper.Data
 {
     public abstract class BasicWebScrapperSite : IBasicWebScrapperSite
     {
-        public string SiteName
+        public string FullUrlToReadFrom
         {
             get => _siteName;
             set

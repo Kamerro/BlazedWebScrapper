@@ -3,77 +3,70 @@
 @using HtmlAgilityPack;
 @using BlazedWebScrapper.Pages.Components;
 @using System.Drawing;
+@using System.Text;
 @inject IBasicWebScrapperSite webScrapperImplementation
 @inject TabConfigurator tabConfigurator
 @inject ConstsBookScrapper consts
 @inject Book searchBook
 @inject List<Book> listOfBooks
-
+@inject Query query
 <body>
-    <SampleComponent MyProperty=":D" Action=@KeepInMindSafety></SampleComponent>
     <div>
         <div>
             <div style="width:100%;height:50px;text-align:center;">
                 <h2>Witaj dobry człowieku tutaj możesz wyszukać książki!</h2>
-            </div
+            </div>
             <div style="height:10px;width:100%">
             </div>
             <div style="margin-left:30%;width:100%">
                 <input type="text" style="width:30%;height:60px; margin-bottom:30px" placeholder="@searchBook.Author.Name @searchBook.Title" />
-                <button type="button" @onclick="() => searchPredefinedBook(Mroz)"><img src="css/open-iconic/font/fonts/searchIcon.png"></button>
+                <button type="button" @onclick="() => SearchPredefinedBook()"><img src="css/open-iconic/font/fonts/searchIcon.png"></button>
             </div>
         </div>
         <div>
             <h3>Lub wybierz z proponowanych:</h3>
-            <Table ListOfBooks="listOfBooks" SetAuthor="setAuthor" tileColor="tabConfigurator.TileColor" SetTitle="setTitle"></Table>
+            <Table ListOfBooks="listOfBooks" SetAuthor="SetAuthor" SetTitle="SetTitle"></Table>
         </div>
     </div>
 </body>
 
 @code {
-    public string Mroz = "Mroz";
     //Wydawnictwoniezwykle.
     //ksiegarnia.pwn.pl
     //nk.com.pl
     //albatros (ciężkie)
     //czytelnik.pl/
-    public string fullPredefined = String.Empty;
-    string KeepInMindSafety()
+    void SearchPredefinedBook()
     {
-        return "Keep in mind safety dude";
-    }
-    void searchPredefinedBook(string book)
-    {
-        fullPredefined = book;
+        StringBuilder sb = new StringBuilder();
+        sb.Append(searchBook.Author.Name);
+        sb.Append(" ");
+        sb.Append(searchBook.Title);
+        query.ObjectOfInterest = sb.ToString();
+        string lol = query.ObjectOfInterest;
         searchText();
 
     }
-    void setAuthor(string author)
+    void SetAuthor(string author)
     {
         searchBook.Author.Name = author;
     }
-    void setTitle(string title)
+    void SetTitle(string title)
     {
         searchBook.Title= title;
-    }
-    void changeColor()
-    {
-        tabConfigurator.TileColor = Color.Black.Name;
-    }
-    void changeColorBack()
-    {
-        tabConfigurator.TileColor = Color.Green.Name;
-
     }
     protected override void OnInitialized()
     {
         tabConfigurator.TileColor = Color.Green.Name;
         listOfBooks.InitializeBooks();
+        query.UrlWithSiteName = "https://czytelnik.pl/pl/searchquery/";
     }
+
+    //Potencjanie funkcja powinna być kompletnie gdzieś indziej wywoływana
     void searchText()
     {
-        webScrapperImplementation.SiteName = $"https://czytelnik.pl/pl/searchquery/{fullPredefined}/1/phot/5?url={fullPredefined}";
-        string test = webScrapperImplementation.SiteName;
+        webScrapperImplementation.FullUrlToReadFrom = $"{query.UrlWithSiteName}{query.ObjectOfInterest}/1/phot/5?url={query.ObjectOfInterest}";
+        string test = webScrapperImplementation.FullUrlToReadFrom;
         var web = new HtmlWeb();
         var doc = web.Load(test);
         var nodesProducts = webScrapperImplementation.AllNodes(doc,consts.ProductWrapper,
