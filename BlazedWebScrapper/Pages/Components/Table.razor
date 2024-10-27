@@ -10,14 +10,14 @@
         {
             var line = ListOfBooks[id];
             <tr>
-                <td @onclick="async () => await SetAuthor.InvokeAsync(line.Author.Name)"
+                <td @onclick="() => SetAuthor.Invoke(SearchBook,line.Author.Name)"
             @onmouseover="@(async () => await ChangeColor(id))"
             @onmouseleave="@(() => ChangeColorBack(id))"
                     style="background-color:@listOfCellsColorsAuthors[id]">
                     <h4>@line.Author.Name @listOfCellsColorsAuthors[id]</h4>
                 </td>
 
-                <td @onclick="async () => await SetTitle.InvokeAsync(line.Title)">
+                <td @onclick="() => SetTitle.Invoke(SearchBook,line.Title)">
                     <h4>@line.Title</h4>
                 </td>
             </tr>
@@ -36,10 +36,13 @@
     public List<Book> ListOfBooks { get; set; }
 
     [Parameter]
-    public EventCallback<string> SetAuthor { get; set; }
+    public Book SearchBook { get;set; }
 
     [Parameter]
-    public EventCallback<string> SetTitle { get; set; }
+    public Action<Book,string> SetAuthor { get; set; }
+
+    [Parameter]
+    public Action<Book,string> SetTitle { get; set; }
 
     public List<string> listOfCellsColorsAuthors = new List<string>();
     public bool isInitialized = false;

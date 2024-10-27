@@ -5,55 +5,35 @@
 @using System.Drawing;
 @using System.Text;
 @inject IBasicWebScrapperSite webScrapperImplementation
-@inject TabConfigurator tabConfigurator
-@inject ConstsBookScrapper consts
-@inject Book searchBook
-@inject List<Book> listOfBooks
-@inject Query query
 <body>
     <div>
         <Header OnInputEvent="OnInputEvent" SearchPredefinedBook="SearchPredefinedBook" InputValue="@inputValue" AuthorName="@searchBook.Author.Name" Title="@searchBook.Title"></Header>
         <div>
             <h3>Lub wybierz z proponowanych:</h3>
-            <Table ListOfBooks="@listOfBooks" SetAuthor="SetAuthor" SetTitle="SetTitle"></Table>
+            <Table ListOfBooks="@listOfBooks" SearchBook="searchBook" SetAuthor="bookService.SetAuthor" SetTitle="bookService.SetTitle"></Table>
         </div>
         <div>
             @if (isSearchDone)
             {
-                <TableResult BooksNames="booksNames" PricePerBook="pricePerBook"></TableResult>
+                <TableResult BooksNames="czytelnikSearcher.BooksNames" PricePerBook="czytelnikSearcher.PricePerBook"></TableResult>
             }
         </div>
     </div>
 </body>
 @code {
+    CzytelnikSearcher czytelnikSearcher = new CzytelnikSearcher();
+    TabConfigurator tabConfigurator = new TabConfigurator();
+    ConstsBookScrapper consts = new ConstsBookScrapper();
+    Book searchBook = new Book();
+    List<Book> listOfBooks = new List<Book>();
+    Query query = new Query();
+    BookService bookService = new BookService();
     public string inputValue = "";
-    List<string> booksNames;
-    List<string> pricePerBook;
     bool isSearchDone = false;
     void SearchPredefinedBook()
     {
-        StringBuilder sb = new StringBuilder();
-        if (String.IsNullOrEmpty(inputValue))
-        {
-            sb.Append(searchBook.Author.Name);
-            sb.Append(" ");
-            sb.Append(searchBook.Title);
-        }
-        else
-        {
-            sb.Append(inputValue);
-        }
-        query.ObjectOfInterest = sb.ToString();
-        webScrapperImplementation.FullUrlToReadFrom = $"{query.UrlWithSiteName}{query.ObjectOfInterest}/1/phot/5?url={query.ObjectOfInterest}";
-        searchText();
-    }
-    void SetAuthor(string author)
-    {
-        searchBook.Author.Name = author;
-    }
-    void SetTitle(string title)
-    {
-        searchBook.Title = title;
+        webScrapperImplementation.FullUrlToReadFrom = czytelnikSearcher.BuildFullUrlToSearch(query, inputValue, searchBook.Author.Name, searchBook.Title);
+        searchText(); 
     }
     protected override void OnInitialized()
     {
@@ -67,19 +47,7 @@
     }
     void searchText()
     {
-        string fullText = webScrapperImplementation.FullUrlToReadFrom;
-        var web = new HtmlWeb();
-        var doc = web.Load(fullText);
-        var nodesProducts = webScrapperImplementation.AllNodes(doc, consts.ProductWrapper,
-                                                                   consts.ClassAttribute,
-                                                                   consts.ATag);
-        var Books = webScrapperImplementation.AllNodes(doc, "productname", "class", "span");
-        booksNames = webScrapperImplementation.GetNamesFromNodes(Books);
-        List<HtmlNode> nodePricesDiv = webScrapperImplementation.AllNodes(doc, "price f-row", "class", "div");
-        List<HtmlNode> nodePricesValue = webScrapperImplementation.GetFirstDescendant(nodePricesDiv, "em");
-
-        pricePerBook = webScrapperImplementation.GetNamesFromNodes(nodePricesValue);
+        czytelnikSearcher.SearchText(webScrapperImplementation.FullUrlToReadFrom,webScrapperImplementation,consts);
         isSearchDone = true;
     }
-
 }
