@@ -12,30 +12,24 @@
 @inject Query query
 <body>
     <div>
-        <div>
-            <div style="width:100%;height:50px;text-align:center;">
-                <h2>Witaj dobry człowieku tutaj możesz wyszukać książki!</h2>
-            </div>
-            <div style="height:10px;width:100%">
-            </div>
-            <div style="margin-left:30%;width:100%">
-                <input type="text" style="width:30%;height:60px; margin-bottom:30px" placeholder="@searchBook.Author.Name @searchBook.Title" @bind="@inputValue" @oninput="OnInputEvent" />
-                <button type="button" @onclick="() => SearchPredefinedBook()"><img src="css/open-iconic/font/fonts/searchIcon.png"></button>
-            </div>
-        </div>
+        <Header OnInputEvent="OnInputEvent" SearchPredefinedBook="SearchPredefinedBook" InputValue="@inputValue" AuthorName="@searchBook.Author.Name" Title="@searchBook.Title"></Header>
         <div>
             <h3>Lub wybierz z proponowanych:</h3>
-            <Table ListOfBooks="listOfBooks" SetAuthor="SetAuthor" SetTitle="SetTitle"></Table>
+            <Table ListOfBooks="@listOfBooks" SetAuthor="SetAuthor" SetTitle="SetTitle"></Table>
+        </div>
+        <div>
+            @if (isSearchDone)
+            {
+                <TableResult BooksNames="booksNames" PricePerBook="pricePerBook"></TableResult>
+            }
         </div>
     </div>
 </body>
 @code {
-    //Wydawnictwoniezwykle.
-    //ksiegarnia.pwn.pl
-    //nk.com.pl
-    //albatros (ciężkie)
-    //czytelnik.pl/
-    private string inputValue = "";
+    public string inputValue = "";
+    List<string> booksNames;
+    List<string> pricePerBook;
+    bool isSearchDone = false;
     void SearchPredefinedBook()
     {
         StringBuilder sb = new StringBuilder();
@@ -52,7 +46,6 @@
         query.ObjectOfInterest = sb.ToString();
         webScrapperImplementation.FullUrlToReadFrom = $"{query.UrlWithSiteName}{query.ObjectOfInterest}/1/phot/5?url={query.ObjectOfInterest}";
         searchText();
-
     }
     void SetAuthor(string author)
     {
@@ -66,28 +59,27 @@
     {
         tabConfigurator.TileColor = Color.Green.Name;
         listOfBooks.InitializeBooks();
-        query.UrlWithSiteName = "https://czytelnik.pl/pl/searchquery/";
+        query.UrlWithSiteName = consts.CzytelnikSite; 
     }
     private void OnInputEvent(ChangeEventArgs changeEvent)
     {
         inputValue = (string)changeEvent.Value;
     }
-    //Potencjanie funkcja powinna być kompletnie gdzieś indziej wywoływana
     void searchText()
     {
-        webScrapperImplementation.FullUrlToReadFrom = $"{query.UrlWithSiteName}{query.ObjectOfInterest}/1/phot/5?url={query.ObjectOfInterest}";
-        string test = webScrapperImplementation.FullUrlToReadFrom;
+        string fullText = webScrapperImplementation.FullUrlToReadFrom;
         var web = new HtmlWeb();
-        var doc = web.Load(test);
+        var doc = web.Load(fullText);
         var nodesProducts = webScrapperImplementation.AllNodes(doc, consts.ProductWrapper,
                                                                    consts.ClassAttribute,
                                                                    consts.ATag);
         var Books = webScrapperImplementation.AllNodes(doc, "productname", "class", "span");
-        List<string> booksNames = webScrapperImplementation.GetNamesFromNodes(Books);
+        booksNames = webScrapperImplementation.GetNamesFromNodes(Books);
         List<HtmlNode> nodePricesDiv = webScrapperImplementation.AllNodes(doc, "price f-row", "class", "div");
         List<HtmlNode> nodePricesValue = webScrapperImplementation.GetFirstDescendant(nodePricesDiv, "em");
 
-        List<string> pricePerBook = webScrapperImplementation.GetNamesFromNodes(nodePricesValue);
+        pricePerBook = webScrapperImplementation.GetNamesFromNodes(nodePricesValue);
+        isSearchDone = true;
     }
 
 }
