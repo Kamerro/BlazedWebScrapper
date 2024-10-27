@@ -19,7 +19,7 @@
             <div style="height:10px;width:100%">
             </div>
             <div style="margin-left:30%;width:100%">
-                <input type="text" style="width:30%;height:60px; margin-bottom:30px" placeholder="@searchBook.Author.Name @searchBook.Title" />
+                <input type="text" style="width:30%;height:60px; margin-bottom:30px" placeholder="@searchBook.Author.Name @searchBook.Title" @bind="@inputValue" @oninput="OnInputEvent" />
                 <button type="button" @onclick="() => SearchPredefinedBook()"><img src="css/open-iconic/font/fonts/searchIcon.png"></button>
             </div>
         </div>
@@ -29,21 +29,28 @@
         </div>
     </div>
 </body>
-
 @code {
     //Wydawnictwoniezwykle.
     //ksiegarnia.pwn.pl
     //nk.com.pl
     //albatros (ciężkie)
     //czytelnik.pl/
+    private string inputValue = "";
     void SearchPredefinedBook()
     {
         StringBuilder sb = new StringBuilder();
-        sb.Append(searchBook.Author.Name);
-        sb.Append(" ");
-        sb.Append(searchBook.Title);
+        if (String.IsNullOrEmpty(inputValue))
+        {
+            sb.Append(searchBook.Author.Name);
+            sb.Append(" ");
+            sb.Append(searchBook.Title);
+        }
+        else
+        {
+            sb.Append(inputValue);
+        }
         query.ObjectOfInterest = sb.ToString();
-        string lol = query.ObjectOfInterest;
+        webScrapperImplementation.FullUrlToReadFrom = $"{query.UrlWithSiteName}{query.ObjectOfInterest}/1/phot/5?url={query.ObjectOfInterest}";
         searchText();
 
     }
@@ -53,7 +60,7 @@
     }
     void SetTitle(string title)
     {
-        searchBook.Title= title;
+        searchBook.Title = title;
     }
     protected override void OnInitialized()
     {
@@ -61,7 +68,10 @@
         listOfBooks.InitializeBooks();
         query.UrlWithSiteName = "https://czytelnik.pl/pl/searchquery/";
     }
-
+    private void OnInputEvent(ChangeEventArgs changeEvent)
+    {
+        inputValue = (string)changeEvent.Value;
+    }
     //Potencjanie funkcja powinna być kompletnie gdzieś indziej wywoływana
     void searchText()
     {
@@ -69,15 +79,15 @@
         string test = webScrapperImplementation.FullUrlToReadFrom;
         var web = new HtmlWeb();
         var doc = web.Load(test);
-        var nodesProducts = webScrapperImplementation.AllNodes(doc,consts.ProductWrapper,
+        var nodesProducts = webScrapperImplementation.AllNodes(doc, consts.ProductWrapper,
                                                                    consts.ClassAttribute,
                                                                    consts.ATag);
-        var Books = webScrapperImplementation.AllNodes(doc,"productname","class","span");
+        var Books = webScrapperImplementation.AllNodes(doc, "productname", "class", "span");
         List<string> booksNames = webScrapperImplementation.GetNamesFromNodes(Books);
         List<HtmlNode> nodePricesDiv = webScrapperImplementation.AllNodes(doc, "price f-row", "class", "div");
-        List<HtmlNode> nodePricesValue = webScrapperImplementation.GetFirstDescendant(nodePricesDiv,"em");
+        List<HtmlNode> nodePricesValue = webScrapperImplementation.GetFirstDescendant(nodePricesDiv, "em");
 
         List<string> pricePerBook = webScrapperImplementation.GetNamesFromNodes(nodePricesValue);
     }
-    
+
 }
