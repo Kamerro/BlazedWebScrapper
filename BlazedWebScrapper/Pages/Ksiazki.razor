@@ -13,17 +13,18 @@
         <div>
             @if (isSearchDone)
             {
-                <TableResult Link="czytelnikSearcher.Links" Author = "czytelnikSearcher.Authors" BooksNames="czytelnikSearcher.Books" PricePerBook="czytelnikSearcher.Prices" Source="Czytelnik"></TableResult>
-                <TableResult Link="PWNSearcher.Links" Author = "PWNSearcher.Authors" BooksNames="PWNSearcher.Books" PricePerBook="PWNSearcher.Prices" Source="PWN"></TableResult>
-                <TableResult Link="wydawnictwoNiezwykleSearcher.Links" Author="wydawnictwoNiezwykleSearcher.Authors" BooksNames="wydawnictwoNiezwykleSearcher.Books" PricePerBook="wydawnictwoNiezwykleSearcher.Prices" Source="WN"></TableResult>
+                <TableResult Link="searcherBooksCzytelnik.Links" Author="searcherBooksCzytelnik.Authors" BooksNames="searcherBooksCzytelnik.Books" PricePerBook="searcherBooksCzytelnik.Prices" Source="Czytelnik"></TableResult>
+                <TableResult Link="searcherBooksPWN.Links" Author="searcherBooksPWN.Authors" BooksNames="searcherBooksPWN.Books" PricePerBook="searcherBooksPWN.Prices" Source="PWN"></TableResult>
+                <TableResult Link="searcherBooksNiezwykle.Links" Author="searcherBooksNiezwykle.Authors" BooksNames="searcherBooksNiezwykle.Books" PricePerBook="searcherBooksNiezwykle.Prices" Source="WN"></TableResult>
             }
         </div>
     </div>
 </body>
 @code {
-    ISearcherBooks czytelnikSearcher = new CzytelnikSearcher();
-    ISearcherBooks PWNSearcher = new PWNSearcher();
-    ISearcherBooks wydawnictwoNiezwykleSearcher = new WydawnictwoNiezwykleSearcher();
+    ISearcherBooks searcherBooksCzytelnik;
+    ISearcherBooks searcherBooksPWN;
+    ISearcherBooks searcherBooksNiezwykle;
+    //IFactorySearcher factorySearcher;
     TabConfigurator tabConfigurator = new TabConfigurator();
     ConstsBookScrapper consts = new ConstsBookScrapper();
     Book searchBook = new Book();
@@ -34,17 +35,16 @@
     bool isSearchDone = false;
     void SearchPredefinedBook()
     {
-        query.UrlWithSiteName = consts.CzytelnikSite;
-        webScrapperImplementation.FullUrlToReadFrom = czytelnikSearcher.BuildFullUrlToSearch(query, inputValue, searchBook.Author.Name, searchBook.Title);
-        searchText(czytelnikSearcher);
-        query.UrlWithSiteName = consts.PWNSite;
-        webScrapperImplementation.FullUrlToReadFrom = PWNSearcher.BuildFullUrlToSearch(query, inputValue, searchBook.Author.Name, searchBook.Title);
-        searchText(PWNSearcher);
-        query.UrlWithSiteName = consts.NiezwykleSite;
-        webScrapperImplementation.FullUrlToReadFrom = wydawnictwoNiezwykleSearcher.BuildFullUrlToSearch(query, inputValue, searchBook.Author.Name, searchBook.Title);
-        searchText(wydawnictwoNiezwykleSearcher);
+        searcherBooksCzytelnik = new CzytelnikSearcher(query, webScrapperImplementation);
+        searcherBooksCzytelnik.BuildFullUrlToSearch(inputValue, searchBook.Author.Name, searchBook.Title, consts.CzytelnikSite);
+        searchText(searcherBooksCzytelnik);
+        searcherBooksPWN = new PWNSearcher(query, webScrapperImplementation);
+        searcherBooksPWN.BuildFullUrlToSearch(inputValue, searchBook.Author.Name, searchBook.Title, consts.PWNSite);
+        searchText(searcherBooksPWN);
+        searcherBooksNiezwykle = new WydawnictwoNiezwykleSearcher(query, webScrapperImplementation);
+        searcherBooksNiezwykle.BuildFullUrlToSearch(inputValue, searchBook.Author.Name, searchBook.Title, consts.NiezwykleSite);
+        searchText(searcherBooksNiezwykle);
         isSearchDone = true;
-
     }
     protected override void OnInitialized()
     {

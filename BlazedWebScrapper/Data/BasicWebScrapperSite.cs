@@ -1,9 +1,4 @@
 ﻿using HtmlAgilityPack;
-using System;
-using System.Data.SqlTypes;
-using System.Linq.Expressions;
-using System.Reflection.Metadata.Ecma335;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace BlazedWebScrapper.Data
 {

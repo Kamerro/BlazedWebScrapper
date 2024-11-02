@@ -5,12 +5,18 @@ namespace BlazedWebScrapper.Data
 {
     public class PWNSearcher : ISearcherBooks
     {
+        public PWNSearcher(Query _query, IBasicWebScrapperSite wsi)
+        {
+            query = _query;
+            webScrapperImplementation = wsi;
+        }
         public List<string> Books { get; set; }
         public List<string> Prices { get; set; }
         public List<string> Authors { get; set; }
         public List<string> Links { get; set; }
-
-        public string BuildFullUrlToSearch(Query query, string inputValue, string authorName, string title)
+        public Query query { get; set; }
+        public IBasicWebScrapperSite webScrapperImplementation { get; set; }
+        public void BuildFullUrlToSearch(string inputValue, string authorName, string title, string siteName)
         {
             StringBuilder sb = new StringBuilder();
             if (String.IsNullOrEmpty(inputValue))
@@ -24,7 +30,8 @@ namespace BlazedWebScrapper.Data
                 sb.Append(inputValue);
             }
             query.ObjectOfInterest = sb.ToString();
-            return $"{query.UrlWithSiteName}{query.ObjectOfInterest}";
+            query.UrlWithSiteName = siteName;
+            webScrapperImplementation.FullUrlToReadFrom = $"{query.UrlWithSiteName}{query.ObjectOfInterest}";
         }
         public void SearchText(string fullUrl, IBasicWebScrapperSite webScrapperImplementation, ConstsBookScrapper consts)
         {
