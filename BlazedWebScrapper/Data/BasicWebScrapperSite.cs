@@ -1,6 +1,8 @@
 ﻿using HtmlAgilityPack;
 using System;
+using System.Data.SqlTypes;
 using System.Linq.Expressions;
+using System.Reflection.Metadata.Ecma335;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace BlazedWebScrapper.Data
@@ -35,7 +37,7 @@ namespace BlazedWebScrapper.Data
             {
                 throw new ArgumentNullException($"{nameof(doc)} is null or {nameof(doc.DocumentNode)} is null");
             }
-            List<HtmlNode> nodes;
+            List<HtmlNode> nodes = new List<HtmlNode>();
             if (name == "")
             {
                 nodes = doc.DocumentNode.Descendants(htmlTag)?.Where(x =>
@@ -58,16 +60,76 @@ namespace BlazedWebScrapper.Data
             return names;
         }
 
-        public List<string> GetStringFromAttribute(List<string> nodes)
+        public List<string> GetStringFromAttribute(List<HtmlNode> nodes,string attribute)
         {
-            return nodes;
+            return nodes.Select(x => x.Attributes[attribute]?.Value).ToList();
         }
 
         public List<HtmlNode> GetFirstDescendant(List<HtmlNode> nodes,string htmlTag)
         {
             List<HtmlNode> innerNodes = new List<HtmlNode>();
 
-            nodes.ForEach(x => innerNodes.Add(x.Descendants(htmlTag).First()));
+            nodes.ForEach(x => { if (x is not null) innerNodes.Add(x.Descendants(htmlTag).FirstOrDefault()); });
+            return innerNodes;
+        }
+        public List<HtmlNode> GetDescandant(List<HtmlNode> nodes, string htmlTag,int number)
+        {
+            List<HtmlNode> innerNodes = new List<HtmlNode>();
+
+            nodes.ForEach(x => { if (x is not null) innerNodes.Add(x.Descendants(htmlTag).ToList()[number]); });
+            return innerNodes;
+        }
+        public List<HtmlNode> GetDescendantsWhereAttributeContains(List<HtmlNode> nodes, string htmlTag, string attribute, string substring)
+        {
+            List<HtmlNode> innerNodes = new List<HtmlNode>();
+
+            nodes.ForEach(node =>
+            {
+                if (node != null)
+                {
+                    innerNodes.AddRange(node
+                        .Descendants(htmlTag)
+                        .Where(descendant =>
+                            descendant.Attributes.Contains(attribute) &&
+                            descendant.Attributes[attribute].Value.Contains(substring)));
+                }
+            });
+
+            return innerNodes;
+        }
+        public List<HtmlNode> GetAllDescendant(List<HtmlNode> nodes, string htmlTag)
+        {
+            List<HtmlNode> innerNodes = new List<HtmlNode>();
+
+            nodes.ForEach(x => innerNodes.AddRange(x.Descendants(htmlTag)));
+            return innerNodes;
+        }
+
+        public List<HtmlNode> GetFirstDescendant(List<HtmlNode> nodes, string htmlTag, string htmlTagAlt, string htmlTagAltSec)
+        {
+            List<HtmlNode> innerNodes = new List<HtmlNode>();
+            for(int i = 0; i < nodes.Count; i++)
+            {
+                var node = (HtmlNode)nodes[i].Descendants(htmlTag).FirstOrDefault();
+                if (node is not null)
+                {
+                    node = (HtmlNode)nodes[i].Descendants(htmlTagAlt).Skip(1).First();
+                    if (node is not null)
+                        innerNodes.Add(node);
+                    else
+                    {
+                        node = (HtmlNode)nodes[i].Descendants(htmlTagAltSec).FirstOrDefault();
+                        if (node is not null)
+                            innerNodes.Add(node);
+                    }
+                }
+                else
+                {
+                    node = (HtmlNode)nodes[i].Descendants(htmlTagAlt).FirstOrDefault();
+                    if (node is not null)
+                        innerNodes.Add(node);
+                }
+            }
             return innerNodes;
         }
     }

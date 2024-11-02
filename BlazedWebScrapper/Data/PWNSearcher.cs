@@ -33,9 +33,9 @@ namespace BlazedWebScrapper.Data
             var doc = web.Load(fullText);
             //do constów można dodać magic stringi
             var BooksNodes = webScrapperImplementation.AllNodes(doc, "", "data-productname", "div");
-            Books = webScrapperImplementation.GetStringFromAttribute(BooksNodes.Select(x => x.Attributes["data-productname"].Value).ToList());
+            Books = webScrapperImplementation.GetStringFromAttribute(BooksNodes, "data-productname");
             List<HtmlNode> nodePricesValues = webScrapperImplementation.AllNodes(doc, "", "data-productprice", "div");
-            Prices = webScrapperImplementation.GetStringFromAttribute(nodePricesValues.Select(x => x.Attributes["data-productprice"].Value).ToList());
+            Prices = webScrapperImplementation.GetStringFromAttribute(nodePricesValues, "data-productprice");
             var Authors = webScrapperImplementation.AllNodes(doc, "emp-info-authors", "class", "div");
             var nodeAuthorValue = webScrapperImplementation.GetFirstDescendant(Authors, "span");    
             nodeAuthorValue = webScrapperImplementation.GetFirstDescendant(Authors, "a");
@@ -43,7 +43,7 @@ namespace BlazedWebScrapper.Data
             .ToList();
 
             var linkNode = webScrapperImplementation.AllNodes(doc, "item-action-url", "class", "a");
-            Links = webScrapperImplementation.GetStringFromAttribute(linkNode.Select(x => x.Attributes["href"].Value).ToList()).Where((element, index) => index % 4 == 0).ToList();
+            Links = webScrapperImplementation.GetStringFromAttribute(linkNode, "href").Where((element, index) => index % 4 == 0).ToList();
             for (int i = 0; i < Links.Count; i++)
             {
                 Links[i] = consts.PWNBase + Links[i];

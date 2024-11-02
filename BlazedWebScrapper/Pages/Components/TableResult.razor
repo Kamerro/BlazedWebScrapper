@@ -1,37 +1,44 @@
-﻿<h3>Wynik wyszukiwania dla @Source:</h3>
-<table>
-    <tr>
-        <td>
-            <h4>Book</h4>
-        </td>
-        <td>
-            <h4>Author</h4>
-        </td>
-        <td>
-            <h4>Price</h4>
-        </td>
-        <td>
-            <h4>Link</h4>
-        </td>
-    </tr>
-    @for (int i = 0; i < BooksNames.Count; i++)
-    {
+﻿@if (BooksNames.Count > 0)
+{
+    <h3>Wynik wyszukiwania dla @Source:</h3>
+    <table>
         <tr>
             <td>
-                <h5>@BooksNames[i]</h5>
+                <h4>Book</h4>
             </td>
             <td>
-                <h5>@Author[i]</h5>
+                <h4>Author</h4>
             </td>
             <td>
-                <h5>@PricePerBook[i]</h5>
+                <h4>Price</h4>
             </td>
             <td>
-                <a href="@Link[i]"><h5>@Link[i]</h5></a>
+                <h4>Link</h4>
             </td>
         </tr>
-    }
-</table>
+        @for (int i = 0; i < BooksNames.Count; i++)
+        {
+            <tr>
+                <td>
+                    <h5>@BooksNames[i]</h5>
+                </td>
+                <td>
+                    <h5>@Author[i]</h5>
+                </td>
+                <td>
+                    <h5>@PricePerBook[i]</h5>
+                </td>
+                <td>
+                    <a href="@Link[i]"><h5>@Link[i]</h5></a>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <h3>Nie znaleziono książek w @Source:</h3>
+}
 @code {
     [Parameter]
     public List<string> BooksNames { get; set; }

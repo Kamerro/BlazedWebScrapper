@@ -41,7 +41,7 @@ namespace BlazedWebScrapper.Data
             Authors = Authors.LeaveOnlyAuthorName();
 
             var linkNode = webScrapperImplementation.AllNodes(doc, "prodname f-row", "class", "a");
-            Links = webScrapperImplementation.GetStringFromAttribute(linkNode.Select(x => x.Attributes["href"].Value).ToList());
+            Links = webScrapperImplementation.GetStringFromAttribute(linkNode, "href");
             for(int i = 0; i < Links.Count; i++)
             {
                 Links[i] = consts.CzytelnikBase + Links[i];
