@@ -1,8 +1,11 @@
-﻿<h3>Wynik wyszukiwania:</h3>
+﻿<h3>Wynik wyszukiwania dla @Source:</h3>
 <table>
     <tr>
         <td>
             <h4>Book</h4>
+        </td>
+        <td>
+            <h4>Author</h4>
         </td>
         <td>
             <h4>Price</h4>
@@ -12,10 +15,13 @@
     {
         <tr>
             <td>
-                <h3>@BooksNames[i]</h3>
+                <h5>@BooksNames[i]</h5>
             </td>
             <td>
-                <h3>@PricePerBook[i]</h3>
+                <h5>@Author[i]</h5>
+            </td>
+            <td>
+                <h5>@PricePerBook[i]</h5>
             </td>
         </tr>
     }
@@ -26,5 +32,10 @@
     
     [Parameter]
     public List<string> PricePerBook { get; set; }
+
+    [Parameter]
+    public List<string> Author { get; set; }
+    [Parameter]
+    public string Source { get; set; }
 
 }

@@ -9,21 +9,21 @@
     <div>
         <Header OnInputEvent="OnInputEvent" SearchPredefinedBook="SearchPredefinedBook" InputValue="@inputValue" AuthorName="@searchBook.Author.Name" Title="@searchBook.Title"></Header>
         <div>
-            <h3>Lub wybierz z proponowanych:</h3>
-            <Table ListOfBooks="@listOfBooks" SearchBook="searchBook" SetAuthor="bookService.SetAuthor" SetTitle="bookService.SetTitle"></Table>
         </div>
         <div>
             @if (isSearchDone)
             {
-                //Tutaj powinna być jakaś lista książek które można znaleźć na internecie wraz z linkami. 
-                //Zamiast przekazywać czytelnikSearcher powinna być przekazana lista obiektów, nawet rozszerzona.
-                <TableResult BooksNames="czytelnikSearcher.BooksNames" PricePerBook="czytelnikSearcher.PricePerBook"></TableResult>
+                <TableResult Author = "czytelnikSearcher.AuthorName" BooksNames="czytelnikSearcher.BooksNames" PricePerBook="czytelnikSearcher.PricePerBook" Source="Czytelnik"></TableResult>
+                <TableResult Author = "PWNSearcher.AuthorName" BooksNames="PWNSearcher.BooksNames" PricePerBook="PWNSearcher.PricePerBook" Source="PWN"></TableResult>
+
             }
         </div>
     </div>
 </body>
 @code {
-    CzytelnikSearcher czytelnikSearcher = new CzytelnikSearcher();
+    ISearcherBooks czytelnikSearcher = new CzytelnikSearcher();
+    ISearcherBooks PWNSearcher = new PWNSearcher();
+
     TabConfigurator tabConfigurator = new TabConfigurator();
     ConstsBookScrapper consts = new ConstsBookScrapper();
     Book searchBook = new Book();
@@ -34,24 +34,27 @@
     bool isSearchDone = false;
     void SearchPredefinedBook()
     {
-        //Dla każdego portalu powinno być wykonywane poniższe, w search text powinien być wykonany zapis książek do listy obiektów.
-        //Można dodać factory wzorzec żeby po stringu przekazywać jaki searcher jest wywoływany.
+        query.UrlWithSiteName = consts.CzytelnikSite;
         webScrapperImplementation.FullUrlToReadFrom = czytelnikSearcher.BuildFullUrlToSearch(query, inputValue, searchBook.Author.Name, searchBook.Title);
-        searchText(); 
+        searchText(czytelnikSearcher);
+
+        query.UrlWithSiteName = consts.PWNSite;
+        webScrapperImplementation.FullUrlToReadFrom = PWNSearcher.BuildFullUrlToSearch(query, inputValue, searchBook.Author.Name, searchBook.Title);
+        searchText(PWNSearcher);
+
     }
     protected override void OnInitialized()
     {
         tabConfigurator.TileColor = Color.Green.Name;
         listOfBooks.InitializeBooks();
-        query.UrlWithSiteName = consts.CzytelnikSite; 
     }
     private void OnInputEvent(ChangeEventArgs changeEvent)
     {
         inputValue = (string)changeEvent.Value;
     }
-    void searchText()
+    void searchText(ISearcherBooks searcher)
     {
-        czytelnikSearcher.SearchText(webScrapperImplementation.FullUrlToReadFrom,webScrapperImplementation,consts);
+        searcher.SearchText(webScrapperImplementation.FullUrlToReadFrom,webScrapperImplementation,consts);
         isSearchDone = true;
     }
 }

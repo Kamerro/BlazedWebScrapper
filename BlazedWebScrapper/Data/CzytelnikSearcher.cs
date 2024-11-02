@@ -3,11 +3,11 @@ using System.Text;
 
 namespace BlazedWebScrapper.Data
 {
-    public class CzytelnikSearcher
+    public class CzytelnikSearcher:ISearcherBooks
     {
         public List<string> BooksNames { get; set; }
         public List<string> PricePerBook { get; set; }
-
+        public List<string> AuthorName { get; set; }
         public string BuildFullUrlToSearch(Query query, string inputValue, string authorName, string title)
         {
             StringBuilder sb = new StringBuilder();
@@ -39,6 +39,23 @@ namespace BlazedWebScrapper.Data
             List<HtmlNode> nodePricesValue = webScrapperImplementation.GetFirstDescendant(nodePricesDiv, "em");
 
             PricePerBook = webScrapperImplementation.GetNamesFromNodes(nodePricesValue);
+            var AuthorNameNodes = webScrapperImplementation.AllNodes(doc, "brand", "class", "a");
+            AuthorName = webScrapperImplementation.GetNamesFromNodes(AuthorNameNodes);
+            AuthorName = AuthorName.LeaveOnlyAuthorName();
         }
     }
+
+
+    public static class ListExtension
+    {
+        public static List<string> LeaveOnlyAuthorName(this List<string> list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                list[i] = list[i].Replace("\n", "").Trim();
+            }
+            return list;
+        }
+    }
+
 }

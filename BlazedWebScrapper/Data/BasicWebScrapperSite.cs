@@ -35,10 +35,19 @@ namespace BlazedWebScrapper.Data
             {
                 throw new ArgumentNullException($"{nameof(doc)} is null or {nameof(doc.DocumentNode)} is null");
             }
-            var nodes = doc.DocumentNode.Descendants(htmlTag)?.Where(x =>
-            x.Attributes[parameterType] is not null && x.Attributes[parameterType].Value == name
-            ).ToList();
-
+            List<HtmlNode> nodes;
+            if (name == "")
+            {
+                nodes = doc.DocumentNode.Descendants(htmlTag)?.Where(x =>
+                x.Attributes[parameterType] is not null && x.Attributes[parameterType].Value.Contains(name)
+                ).ToList();
+            }
+            else
+            {
+                nodes = doc.DocumentNode.Descendants(htmlTag)?.Where(x =>
+               x.Attributes[parameterType] is not null && x.Attributes[parameterType].Value == name
+               ).ToList();
+            }
             return nodes!;
         }
 
@@ -47,6 +56,11 @@ namespace BlazedWebScrapper.Data
             List<string> names = new List<string>();
             nodes.ForEach(x => names.Add(x.InnerHtml));
             return names;
+        }
+
+        public List<string> GetStringFromAttribute(List<string> nodes)
+        {
+            return nodes;
         }
 
         public List<HtmlNode> GetFirstDescendant(List<HtmlNode> nodes,string htmlTag)

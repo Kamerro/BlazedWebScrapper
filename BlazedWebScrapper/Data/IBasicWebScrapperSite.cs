@@ -9,5 +9,6 @@ namespace BlazedWebScrapper.Data
         public List<HtmlNode> AllNodes(HtmlDocument doc, string name, string parameterType, string htmlTag);
         public List<string> GetNamesFromNodes(List<HtmlNode> nodes);
         public List<HtmlNode> GetFirstDescendant(List<HtmlNode> nodes,string htmlTag);
+        public List<string> GetStringFromAttribute(List<string> nodes);
     }
 }
