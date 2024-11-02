@@ -15,12 +15,17 @@ namespace BlazedWebScrapper.Data
         const string classAttribute = "class";
         const string czytelnikSite = "https://czytelnik.pl/pl/searchquery/";
         const string pwnSite = "https://ksiegarnia.pwn.pl/szukaj?q=";
+        const string czytelnikBase = "https://czytelnik.pl";
+        const string pwnBase = "https://ksiegarnia.pwn.pl/";
         public string ProductWrapper { get => productWrapper;}
         public string ATag { get => aTag; }
         public string DivTag { get => divTag; }
         public string ClassAttribute { get => classAttribute; }
         public string CzytelnikSite { get => czytelnikSite;}
         public string PWNSite { get => pwnSite; }
+        public string CzytelnikBase { get => czytelnikBase;}
+
+        public string PWNBase { get => pwnBase; } 
 
     }
 }

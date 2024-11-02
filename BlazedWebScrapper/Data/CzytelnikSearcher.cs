@@ -5,9 +5,11 @@ namespace BlazedWebScrapper.Data
 {
     public class CzytelnikSearcher:ISearcherBooks
     {
-        public List<string> BooksNames { get; set; }
-        public List<string> PricePerBook { get; set; }
-        public List<string> AuthorName { get; set; }
+        public List<string> Books { get; set; }
+        public List<string> Prices { get; set; }
+        public List<string> Authors { get; set; }
+        public List<string> Links { get; set; }
+
         public string BuildFullUrlToSearch(Query query, string inputValue, string authorName, string title)
         {
             StringBuilder sb = new StringBuilder();
@@ -29,19 +31,22 @@ namespace BlazedWebScrapper.Data
             string fullText = webScrapperImplementation.FullUrlToReadFrom;
             var web = new HtmlWeb();
             var doc = web.Load(fullText);
-            var nodesProducts = webScrapperImplementation.AllNodes(doc, consts.ProductWrapper,
-                                                                       consts.ClassAttribute,
-                                                                       consts.ATag);
-            //do constów można dodać magic stringi
-            var Books = webScrapperImplementation.AllNodes(doc, "productname", "class", "span");
-            BooksNames = webScrapperImplementation.GetNamesFromNodes(Books);
+            var BooksNodes = webScrapperImplementation.AllNodes(doc, "productname", "class", "span");
+            Books = webScrapperImplementation.GetNamesFromNodes(BooksNodes);
             List<HtmlNode> nodePricesDiv = webScrapperImplementation.AllNodes(doc, "price f-row", "class", "div");
             List<HtmlNode> nodePricesValue = webScrapperImplementation.GetFirstDescendant(nodePricesDiv, "em");
-
-            PricePerBook = webScrapperImplementation.GetNamesFromNodes(nodePricesValue);
+            Prices = webScrapperImplementation.GetNamesFromNodes(nodePricesValue);
             var AuthorNameNodes = webScrapperImplementation.AllNodes(doc, "brand", "class", "a");
-            AuthorName = webScrapperImplementation.GetNamesFromNodes(AuthorNameNodes);
-            AuthorName = AuthorName.LeaveOnlyAuthorName();
+            Authors = webScrapperImplementation.GetNamesFromNodes(AuthorNameNodes);
+            Authors = Authors.LeaveOnlyAuthorName();
+
+            var linkNode = webScrapperImplementation.AllNodes(doc, "prodname f-row", "class", "a");
+            Links = webScrapperImplementation.GetStringFromAttribute(linkNode.Select(x => x.Attributes["href"].Value).ToList());
+            for(int i = 0; i < Links.Count; i++)
+            {
+                Links[i] = consts.CzytelnikBase + Links[i];
+            }
+
         }
     }
 

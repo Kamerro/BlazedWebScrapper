@@ -10,6 +10,9 @@
         <td>
             <h4>Price</h4>
         </td>
+        <td>
+            <h4>Link</h4>
+        </td>
     </tr>
     @for (int i = 0; i < BooksNames.Count; i++)
     {
@@ -23,6 +26,9 @@
             <td>
                 <h5>@PricePerBook[i]</h5>
             </td>
+            <td>
+                <a href="@Link[i]"><h5>@Link[i]</h5></a>
+            </td>
         </tr>
     }
 </table>
@@ -35,6 +41,10 @@
 
     [Parameter]
     public List<string> Author { get; set; }
+
+    [Parameter]
+    public List<string> Link { get; set; }
+
     [Parameter]
     public string Source { get; set; }
 

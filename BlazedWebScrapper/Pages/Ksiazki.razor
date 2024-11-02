@@ -13,8 +13,8 @@
         <div>
             @if (isSearchDone)
             {
-                <TableResult Author = "czytelnikSearcher.AuthorName" BooksNames="czytelnikSearcher.BooksNames" PricePerBook="czytelnikSearcher.PricePerBook" Source="Czytelnik"></TableResult>
-                <TableResult Author = "PWNSearcher.AuthorName" BooksNames="PWNSearcher.BooksNames" PricePerBook="PWNSearcher.PricePerBook" Source="PWN"></TableResult>
+                <TableResult Link="czytelnikSearcher.Links" Author = "czytelnikSearcher.Authors" BooksNames="czytelnikSearcher.Books" PricePerBook="czytelnikSearcher.Prices" Source="Czytelnik"></TableResult>
+                <TableResult Link="PWNSearcher.Links" Author = "PWNSearcher.Authors" BooksNames="PWNSearcher.Books" PricePerBook="PWNSearcher.Prices" Source="PWN"></TableResult>
 
             }
         </div>
