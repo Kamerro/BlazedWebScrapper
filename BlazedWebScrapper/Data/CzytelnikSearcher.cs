@@ -34,8 +34,9 @@ namespace BlazedWebScrapper.Data
             query.UrlWithSiteName = siteName;
             webScrapperImplementation.FullUrlToReadFrom = $"{query.UrlWithSiteName}{query.ObjectOfInterest}/1/phot/5?url={query.ObjectOfInterest}";
         }
-        public void SearchText(string fullUrl, IBasicWebScrapperSite webScrapperImplementation, ConstsBookScrapper consts)
+        public void SearchText()
         {
+            ConstsBookScrapper consts = new ConstsBookScrapper();
             string fullText = webScrapperImplementation.FullUrlToReadFrom;
             var web = new HtmlWeb();
             var doc = web.Load(fullText);

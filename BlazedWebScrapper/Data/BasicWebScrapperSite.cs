@@ -51,7 +51,7 @@ namespace BlazedWebScrapper.Data
         public List<string> GetNamesFromNodes(List<HtmlNode> nodes)
         {
             List<string> names = new List<string>();
-            nodes.ForEach(x => names.Add(x.InnerHtml));
+            nodes.ForEach(x => names.Add(x?.InnerHtml));
             return names;
         }
 

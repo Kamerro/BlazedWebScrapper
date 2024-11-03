@@ -1,35 +1,23 @@
-﻿@if (BooksNames.Count > 0)
+﻿@if (BooksNames.Count > 0 && Author.Count>0)
 {
     <h3>Wynik wyszukiwania dla @Source:</h3>
-    <table>
+    <table style="text-align:center;">
         <tr>
             <td>
-                <h4>Book</h4>
+                <h4>Książka</h4>
             </td>
             <td>
-                <h4>Author</h4>
-            </td>
-            <td>
-                <h4>Price</h4>
-            </td>
-            <td>
-                <h4>Link</h4>
+                <h4>Cena</h4>
             </td>
         </tr>
-        @for (int i = 0; i < BooksNames.Count; i++)
+        @for (int i = 0; (i < BooksNames.Count) && (i < Author.Count); i++)
         {
             <tr>
                 <td>
-                    <h5>@BooksNames[i]</h5>
+                    <a href="@Link[i]" target="_blank"><h6>@Author[i] - @BooksNames[i]</h6></a>
                 </td>
                 <td>
-                    <h5>@Author[i]</h5>
-                </td>
-                <td>
-                    <h5>@PricePerBook[i]</h5>
-                </td>
-                <td>
-                    <a href="@Link[i]"><h5>@Link[i]</h5></a>
+                    <h6>@PricePerBook[i]</h6>
                 </td>
             </tr>
         }
@@ -37,7 +25,7 @@
 }
 else
 {
-    <h3>Nie znaleziono książek w @Source:</h3>
+    <h3>Nie znaleziono książek w @Source</h3>
 }
 @code {
     [Parameter]

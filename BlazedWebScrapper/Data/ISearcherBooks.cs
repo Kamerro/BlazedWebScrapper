@@ -3,7 +3,7 @@
     public interface ISearcherBooks
     {
         void BuildFullUrlToSearch(string inputValue, string authorName, string title,string siteName);
-        void SearchText(string fullUrl, IBasicWebScrapperSite webScrapperImplementation, ConstsBookScrapper consts);
+        void SearchText();
         public List<string> Books { get; set; }
         public List<string> Prices { get; set; }
         public List<string> Authors { get; set; }

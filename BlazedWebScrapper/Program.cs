@@ -8,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<IBasicWebScrapperSite,WebScrapperImplementation>();
+builder.Services.AddSingleton<IFactorySearcher, FactorySearcher>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

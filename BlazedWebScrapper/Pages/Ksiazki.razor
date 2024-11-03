@@ -5,6 +5,7 @@
 @using System.Drawing;
 @using System.Text;
 @inject IBasicWebScrapperSite webScrapperImplementation
+@inject IFactorySearcher factorySearcher
 <body>
     <div>
         <Header OnInputEvent="OnInputEvent" SearchPredefinedBook="SearchPredefinedBook" InputValue="@inputValue" AuthorName="@searchBook.Author.Name" Title="@searchBook.Title"></Header>
@@ -21,10 +22,10 @@
     </div>
 </body>
 @code {
+    public bool Binded = false;
     ISearcherBooks searcherBooksCzytelnik;
     ISearcherBooks searcherBooksPWN;
     ISearcherBooks searcherBooksNiezwykle;
-    //IFactorySearcher factorySearcher;
     TabConfigurator tabConfigurator = new TabConfigurator();
     ConstsBookScrapper consts = new ConstsBookScrapper();
     Book searchBook = new Book();
@@ -35,15 +36,15 @@
     bool isSearchDone = false;
     void SearchPredefinedBook()
     {
-        searcherBooksCzytelnik = new CzytelnikSearcher(query, webScrapperImplementation);
+        searcherBooksCzytelnik = factorySearcher.GetSearcher("Czytelnik",query, webScrapperImplementation);
         searcherBooksCzytelnik.BuildFullUrlToSearch(inputValue, searchBook.Author.Name, searchBook.Title, consts.CzytelnikSite);
-        searchText(searcherBooksCzytelnik);
-        searcherBooksPWN = new PWNSearcher(query, webScrapperImplementation);
+        searcherBooksCzytelnik.SearchText();
+        searcherBooksPWN = factorySearcher.GetSearcher("PWN", query, webScrapperImplementation);
         searcherBooksPWN.BuildFullUrlToSearch(inputValue, searchBook.Author.Name, searchBook.Title, consts.PWNSite);
-        searchText(searcherBooksPWN);
-        searcherBooksNiezwykle = new WydawnictwoNiezwykleSearcher(query, webScrapperImplementation);
+        searcherBooksPWN.SearchText();
+        searcherBooksNiezwykle = factorySearcher.GetSearcher("Niezwykle", query, webScrapperImplementation);
         searcherBooksNiezwykle.BuildFullUrlToSearch(inputValue, searchBook.Author.Name, searchBook.Title, consts.NiezwykleSite);
-        searchText(searcherBooksNiezwykle);
+        searcherBooksNiezwykle.SearchText();
         isSearchDone = true;
     }
     protected override void OnInitialized()
@@ -54,9 +55,5 @@
     private void OnInputEvent(ChangeEventArgs changeEvent)
     {
         inputValue = (string)changeEvent.Value;
-    }
-    void searchText(ISearcherBooks searcher)
-    {
-        searcher.SearchText(webScrapperImplementation.FullUrlToReadFrom,webScrapperImplementation,consts);
     }
 }
