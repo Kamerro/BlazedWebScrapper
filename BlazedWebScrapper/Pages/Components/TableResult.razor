@@ -1,29 +1,29 @@
-﻿@if (BooksNames.Count > 0 && Author.Count>0)
-{
-    <h3>Wynik wyszukiwania dla @Source:</h3>
-    <table style="text-align:center;">
-        <tr>
-            <td>
-                <h4>Książka</h4>
-            </td>
-            <td>
-                <h4>Cena</h4>
-            </td>
-        </tr>
-        @for (int i = 0; (i < BooksNames.Count) && (i < Author.Count); i++)
-        {
+﻿<ScrapResult BooksNames="BooksNames" Author="Author">
+    <Result>
+        <h3>Wynik wyszukiwania dla @Source:</h3>
+        <table style="text-align:center;">
             <tr>
                 <td>
-                    <a href="@Link[i]" target="_blank"><h6>@Author[i] - @BooksNames[i]</h6></a>
+                    <h4>Książka</h4>
                 </td>
                 <td>
-                    <h6>@PricePerBook[i]</h6>
+                    <h4>Cena</h4>
                 </td>
             </tr>
-        }
-    </table>
-}
-else
-{
-    <h3>Nie znaleziono książek w @Source</h3>
-}
+            @for (int i = 0; (i < BooksNames.Count) && (i < Author.Count); i++)
+            {
+                <tr>
+                    <td>
+                        <a href="@Link[i]" target="_blank"><h6>@Author[i] - @BooksNames[i]</h6></a>
+                    </td>
+                    <td>
+                        <h6>@PricePerBook[i]</h6>
+                    </td>
+                </tr>
+            }
+        </table>
+    </Result>
+    <NotFound>
+        <h3>Nie znaleziono książek w @Source</h3>
+    </NotFound>
+</ScrapResult>
