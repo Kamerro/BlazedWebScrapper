@@ -12,8 +12,6 @@
     <div>
         <Header SearchPredefinedBook="SearchPredefinedBook" InputValue="@inputValue" AuthorName="@searchBook.Author.Name" Title="@searchBook.Title"></Header>
         <div>
-        </div>
-        <div>
             @if (isSearchDone)
             {
                 <TableResult Link="searcherBooksCzytelnik.Links" Author="searcherBooksCzytelnik.Authors" BooksNames="searcherBooksCzytelnik.Books" PricePerBook="searcherBooksCzytelnik.Prices" Source="Czytelnik"></TableResult>
