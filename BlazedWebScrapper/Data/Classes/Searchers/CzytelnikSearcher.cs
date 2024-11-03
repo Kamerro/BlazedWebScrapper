@@ -1,9 +1,12 @@
-﻿using HtmlAgilityPack;
+﻿using BlazedWebScrapper.Data.Classes.Consts;
+using BlazedWebScrapper.Data.Classes.Queries;
+using BlazedWebScrapper.Data.Interfaces;
+using HtmlAgilityPack;
 using System.Text;
 
-namespace BlazedWebScrapper.Data
+namespace BlazedWebScrapper.Data.Classes.Searchers
 {
-    public class CzytelnikSearcher:ISearcherBooks
+    public class CzytelnikSearcher : ISearcherBooks
     {
         public List<string> Books { get; set; }
         public List<string> Prices { get; set; }
@@ -12,7 +15,7 @@ namespace BlazedWebScrapper.Data
         public Query query { get; set; }
         public IBasicWebScrapperSite webScrapperImplementation { get; set; }
 
-        public CzytelnikSearcher(Query _query,IBasicWebScrapperSite wsi)
+        public CzytelnikSearcher(Query _query, IBasicWebScrapperSite wsi)
         {
             query = _query;
             webScrapperImplementation = wsi;
@@ -20,7 +23,7 @@ namespace BlazedWebScrapper.Data
         public void BuildFullUrlToSearch(string inputValue, string authorName, string title, string siteName)
         {
             StringBuilder sb = new StringBuilder();
-            if (String.IsNullOrEmpty(inputValue))
+            if (string.IsNullOrEmpty(inputValue))
             {
                 sb.Append(authorName);
                 sb.Append(" ");
@@ -51,7 +54,7 @@ namespace BlazedWebScrapper.Data
 
             var linkNode = webScrapperImplementation.AllNodes(doc, "prodname f-row", "class", "a");
             Links = webScrapperImplementation.GetStringFromAttribute(linkNode, "href");
-            for(int i = 0; i < Links.Count; i++)
+            for (int i = 0; i < Links.Count; i++)
             {
                 Links[i] = consts.CzytelnikBase + Links[i];
             }

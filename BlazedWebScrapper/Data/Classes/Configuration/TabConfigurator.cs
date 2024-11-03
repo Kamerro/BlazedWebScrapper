@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace BlazedWebScrapper.Data
+namespace BlazedWebScrapper.Data.Classes.Configuration
 {
     public class TabConfigurator
     {

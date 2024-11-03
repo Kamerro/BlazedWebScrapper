@@ -1,4 +1,4 @@
-﻿@using BlazedWebScrapper.Data;
+﻿@using BlazedWebScrapper.Data.Classes.Data;
 <table style="text-align:center;">
     <tr>
         <th>Autor</th>
@@ -11,8 +11,6 @@
             var line = ListOfBooks[id];
             <tr>
                 <td @onclick="() => SetAuthor.Invoke(SearchBook,line.Author.Name)"
-            @onmouseover="@(async () => await ChangeColor(id))"
-            @onmouseleave="@(() => ChangeColorBack(id))"
                     style="background-color:@listOfCellsColorsAuthors[id]">
                     <h4>@line.Author.Name @listOfCellsColorsAuthors[id]</h4>
                 </td>
@@ -36,34 +34,16 @@
     public List<Book> ListOfBooks { get; set; }
 
     [Parameter]
-    public Book SearchBook { get;set; }
+    public Book SearchBook { get; set; }
 
     [Parameter]
-    public Action<Book,string> SetAuthor { get; set; }
+    public Action<Book, string> SetAuthor { get; set; }
 
     [Parameter]
-    public Action<Book,string> SetTitle { get; set; }
-
-
+    public Action<Book, string> SetTitle { get; set; }
 
     public List<string> listOfCellsColorsAuthors = new List<string>();
     public bool isInitialized = false;
-
-    private async Task ChangeColor(int id)
-    {
-        if (id >= 0 && id < listOfCellsColorsAuthors.Count)
-        {
-           listOfCellsColorsAuthors[id] = "Green";
-        }
-    }
-
-    private void ChangeColorBack(int id)
-    {
-        if (id >= 0 && id < listOfCellsColorsAuthors.Count)
-        {
-            listOfCellsColorsAuthors[id] = "Black";
-        }
-    }
 
     public List<string> InitializeListOfStringsForAuthors()
     {

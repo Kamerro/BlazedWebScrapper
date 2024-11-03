@@ -1,4 +1,4 @@
-﻿namespace BlazedWebScrapper.Data
+﻿namespace BlazedWebScrapper.Data.Classes.Queries
 {
     public class Query
     {
@@ -10,7 +10,7 @@
                 _objectOfInterest = Uri.EscapeDataString(value);
             }
         }
-        private string _objectOfInterest = String.Empty;
+        private string _objectOfInterest = string.Empty;
 
         public string UrlWithSiteName
         {
@@ -20,7 +20,7 @@
                 _urlWithSiteName = value;
             }
         }
-        private string _urlWithSiteName = String.Empty;
+        private string _urlWithSiteName = string.Empty;
 
     }
 }

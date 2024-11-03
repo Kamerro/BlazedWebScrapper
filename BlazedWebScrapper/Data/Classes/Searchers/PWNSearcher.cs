@@ -1,7 +1,10 @@
-﻿using HtmlAgilityPack;
+﻿using BlazedWebScrapper.Data.Classes.Consts;
+using BlazedWebScrapper.Data.Classes.Queries;
+using BlazedWebScrapper.Data.Interfaces;
+using HtmlAgilityPack;
 using System.Text;
 
-namespace BlazedWebScrapper.Data
+namespace BlazedWebScrapper.Data.Classes.Searchers
 {
     public class PWNSearcher : ISearcherBooks
     {
@@ -19,7 +22,7 @@ namespace BlazedWebScrapper.Data
         public void BuildFullUrlToSearch(string inputValue, string authorName, string title, string siteName)
         {
             StringBuilder sb = new StringBuilder();
-            if (String.IsNullOrEmpty(inputValue))
+            if (string.IsNullOrEmpty(inputValue))
             {
                 sb.Append(authorName);
                 sb.Append(" ");
@@ -45,7 +48,7 @@ namespace BlazedWebScrapper.Data
             List<HtmlNode> nodePricesValues = webScrapperImplementation.AllNodes(doc, "", "data-productprice", "div");
             Prices = webScrapperImplementation.GetStringFromAttribute(nodePricesValues, "data-productprice");
             var Authors = webScrapperImplementation.AllNodes(doc, "emp-info-authors", "class", "div");
-            var nodeAuthorValue = webScrapperImplementation.GetFirstDescendant(Authors, "span");    
+            var nodeAuthorValue = webScrapperImplementation.GetFirstDescendant(Authors, "span");
             nodeAuthorValue = webScrapperImplementation.GetFirstDescendant(Authors, "a");
             this.Authors = webScrapperImplementation.GetNamesFromNodes(nodeAuthorValue).Where((element, index) => index % 2 == 0)
             .ToList();

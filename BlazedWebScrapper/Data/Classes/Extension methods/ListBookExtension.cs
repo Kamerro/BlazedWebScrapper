@@ -1,4 +1,6 @@
-﻿namespace BlazedWebScrapper.Data
+﻿using BlazedWebScrapper.Data.Classes.Data;
+
+namespace BlazedWebScrapper.Data
 {
     public static class ListBookExtension
     {

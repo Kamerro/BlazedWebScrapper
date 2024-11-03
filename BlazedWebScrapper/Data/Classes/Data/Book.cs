@@ -1,4 +1,4 @@
-﻿namespace BlazedWebScrapper.Data
+﻿namespace BlazedWebScrapper.Data.Classes.Data
 {
     public class Book
     {

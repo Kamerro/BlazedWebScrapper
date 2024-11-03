@@ -1,9 +1,7 @@
-﻿namespace BlazedWebScrapper.Data
+﻿namespace BlazedWebScrapper.Data.Classes.Data
 {
     public class Author
     {
         public string Name { get; set; }
-        public string Surname { get; set; }
-
     }
 }

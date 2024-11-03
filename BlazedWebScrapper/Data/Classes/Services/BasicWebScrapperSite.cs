@@ -1,6 +1,7 @@
-﻿using HtmlAgilityPack;
+﻿using BlazedWebScrapper.Data.Interfaces;
+using HtmlAgilityPack;
 
-namespace BlazedWebScrapper.Data
+namespace BlazedWebScrapper.Data.Classes.Services
 {
     public abstract class BasicWebScrapperSite : IBasicWebScrapperSite
     {
@@ -55,19 +56,19 @@ namespace BlazedWebScrapper.Data
             return names;
         }
 
-        public List<string> GetStringFromAttribute(List<HtmlNode> nodes,string attribute)
+        public List<string> GetStringFromAttribute(List<HtmlNode> nodes, string attribute)
         {
             return nodes.Select(x => x.Attributes[attribute]?.Value).ToList();
         }
 
-        public List<HtmlNode> GetFirstDescendant(List<HtmlNode> nodes,string htmlTag)
+        public List<HtmlNode> GetFirstDescendant(List<HtmlNode> nodes, string htmlTag)
         {
             List<HtmlNode> innerNodes = new List<HtmlNode>();
 
             nodes.ForEach(x => { if (x is not null) innerNodes.Add(x.Descendants(htmlTag).FirstOrDefault()); });
             return innerNodes;
         }
-        public List<HtmlNode> GetDescandant(List<HtmlNode> nodes, string htmlTag,int number)
+        public List<HtmlNode> GetDescandant(List<HtmlNode> nodes, string htmlTag, int number)
         {
             List<HtmlNode> innerNodes = new List<HtmlNode>();
 
@@ -103,24 +104,24 @@ namespace BlazedWebScrapper.Data
         public List<HtmlNode> GetFirstDescendant(List<HtmlNode> nodes, string htmlTag, string htmlTagAlt, string htmlTagAltSec)
         {
             List<HtmlNode> innerNodes = new List<HtmlNode>();
-            for(int i = 0; i < nodes.Count; i++)
+            for (int i = 0; i < nodes.Count; i++)
             {
-                var node = (HtmlNode)nodes[i].Descendants(htmlTag).FirstOrDefault();
+                var node = nodes[i].Descendants(htmlTag).FirstOrDefault();
                 if (node is not null)
                 {
-                    node = (HtmlNode)nodes[i].Descendants(htmlTagAlt).Skip(1).First();
+                    node = nodes[i].Descendants(htmlTagAlt).Skip(1).First();
                     if (node is not null)
                         innerNodes.Add(node);
                     else
                     {
-                        node = (HtmlNode)nodes[i].Descendants(htmlTagAltSec).FirstOrDefault();
+                        node = nodes[i].Descendants(htmlTagAltSec).FirstOrDefault();
                         if (node is not null)
                             innerNodes.Add(node);
                     }
                 }
                 else
                 {
-                    node = (HtmlNode)nodes[i].Descendants(htmlTagAlt).FirstOrDefault();
+                    node = nodes[i].Descendants(htmlTagAlt).FirstOrDefault();
                     if (node is not null)
                         innerNodes.Add(node);
                 }

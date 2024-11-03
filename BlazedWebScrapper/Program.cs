@@ -1,4 +1,6 @@
-using BlazedWebScrapper.Data;
+using BlazedWebScrapper.Data.Classes.Factories;
+using BlazedWebScrapper.Data.Classes.Services;
+using BlazedWebScrapper.Data.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 

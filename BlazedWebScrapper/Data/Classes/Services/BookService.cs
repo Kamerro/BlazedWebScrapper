@@ -1,8 +1,10 @@
-﻿namespace BlazedWebScrapper.Data
+﻿using BlazedWebScrapper.Data.Classes.Data;
+
+namespace BlazedWebScrapper.Data.Classes.Services
 {
     public class BookService
     {
-        public void SetAuthor(Book searchBook,string author)
+        public void SetAuthor(Book searchBook, string author)
         {
             searchBook.Author.Name = author;
         }

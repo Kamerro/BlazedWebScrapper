@@ -1,7 +1,9 @@
-﻿using HtmlAgilityPack;
+﻿using BlazedWebScrapper.Data.Classes.Consts;
+using BlazedWebScrapper.Data.Interfaces;
+using HtmlAgilityPack;
 using System.Text;
-
-namespace BlazedWebScrapper.Data
+using BlazedWebScrapper.Data.Classes.Queries;
+namespace BlazedWebScrapper.Data.Classes.Searchers
 {
     public class WydawnictwoNiezwykleSearcher : ISearcherBooks
     {
@@ -19,7 +21,7 @@ namespace BlazedWebScrapper.Data
         public void BuildFullUrlToSearch(string inputValue, string authorName, string title, string siteName)
         {
             StringBuilder sb = new StringBuilder();
-            if (String.IsNullOrEmpty(inputValue))
+            if (string.IsNullOrEmpty(inputValue))
             {
                 sb.Append(authorName);
                 sb.Append(" ");
@@ -42,7 +44,7 @@ namespace BlazedWebScrapper.Data
             //do constów można dodać magic stringi
             var BooksNodes = webScrapperImplementation.AllNodes(doc, "row touchwrap", "class", "div");
             var LinkNodes = webScrapperImplementation.GetAllDescendant(BooksNodes, "div");
-            LinkNodes = webScrapperImplementation.GetDescendantsWhereAttributeContains(LinkNodes, "div","class","product-box");
+            LinkNodes = webScrapperImplementation.GetDescendantsWhereAttributeContains(LinkNodes, "div", "class", "product-box");
             LinkNodes = webScrapperImplementation.GetDescandant(LinkNodes, "a", 1);
             BooksNodes = webScrapperImplementation.GetAllDescendant(BooksNodes, "h6");
             Books = webScrapperImplementation.GetNamesFromNodes(BooksNodes);
@@ -52,8 +54,8 @@ namespace BlazedWebScrapper.Data
             var AuthorsNodes = webScrapperImplementation.AllNodes(doc, "desc", "class", "div");
             AuthorsNodes = webScrapperImplementation.GetFirstDescendant(AuthorsNodes, "p");
             AuthorsNodes = webScrapperImplementation.GetFirstDescendant(AuthorsNodes, "a");
-            this.Authors = webScrapperImplementation.GetNamesFromNodes(AuthorsNodes);
-            this.Links = webScrapperImplementation.GetStringFromAttribute(LinkNodes, "href");
+            Authors = webScrapperImplementation.GetNamesFromNodes(AuthorsNodes);
+            Links = webScrapperImplementation.GetStringFromAttribute(LinkNodes, "href");
         }
     }
 }
