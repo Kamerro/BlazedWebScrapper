@@ -16,6 +16,9 @@ namespace BlazedWebScrapper.Data.Classes.Consts
         const string pwnBase = "https://ksiegarnia.pwn.pl/";
         const string wydawnictwoNiezwykle = "https://wydawnictwoniezwykle.pl/";
         const string niezwykleSite = "https://wydawnictwoniezwykle.pl/products/search?keyword=";
+        const string naszaKsiegarniaBase = "https://nk.com.pl/";
+        const string naszaSite = "https://nk.com.pl/szukaj.html?searchText=";
+
         public string ProductWrapper { get => productWrapper; }
         public string ATag { get => aTag; }
         public string DivTag { get => divTag; }
@@ -27,6 +30,8 @@ namespace BlazedWebScrapper.Data.Classes.Consts
         public string PWNBase { get => pwnBase; }
         public string NiezwykleBase { get => wydawnictwoNiezwykle; }
         public string NiezwykleSite { get => niezwykleSite; }
+        public string NaszaKsiegarniaBase { get=>naszaKsiegarniaBase;}
+        public string NaszaSite { get=>naszaSite;}
 
 
     }

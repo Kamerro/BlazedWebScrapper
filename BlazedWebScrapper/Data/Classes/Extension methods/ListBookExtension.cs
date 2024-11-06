@@ -14,5 +14,6 @@ namespace BlazedWebScrapper.Data
 
             return books.ToList();
         }
+     
     }
 }

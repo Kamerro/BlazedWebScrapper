@@ -71,8 +71,7 @@ namespace BlazedWebScrapper.Data.Classes.Services
         public List<HtmlNode> GetDescandant(List<HtmlNode> nodes, string htmlTag, int number)
         {
             List<HtmlNode> innerNodes = new List<HtmlNode>();
-
-            nodes.ForEach(x => { if (x is not null) innerNodes.Add(x.Descendants(htmlTag).ToList()[number]); });
+            nodes.ForEach(x => { if (x is not null) innerNodes.Add(x.Descendants(htmlTag)?.ToList()[number]); });
             return innerNodes;
         }
         public List<HtmlNode> GetDescendantsWhereAttributeContains(List<HtmlNode> nodes, string htmlTag, string attribute, string substring)

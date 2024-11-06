@@ -7,7 +7,7 @@ namespace BlazedWebScrapper.Pages.Components
         [Parameter]
         public EventCallback<ChangeEventArgs> OnInputEvent { get; set; }
         [Parameter]
-        public EventCallback SearchPredefinedBook { get; set; }
+        public EventCallback<string> SearchPredefinedBook { get; set; }
         [Parameter]
         public string InputValue { get; set; }
         [Parameter]

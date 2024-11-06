@@ -3,14 +3,18 @@ using BlazedWebScrapper.Data.Interfaces;
 using HtmlAgilityPack;
 using System.Text;
 using BlazedWebScrapper.Data.Classes.Queries;
+using BlazedWebScrapper.Data.Classes.Services;
+using System.Text.RegularExpressions;
+
 namespace BlazedWebScrapper.Data.Classes.Searchers
 {
     public class WydawnictwoNiezwykleSearcher : ISearcherBooks
     {
-        public WydawnictwoNiezwykleSearcher(Query _query, IBasicWebScrapperSite wsi)
+        public WydawnictwoNiezwykleSearcher(Query _query, IBasicWebScrapperSite wsi, BookServiceList bksrv)
         {
             query = _query;
             webScrapperImplementation = wsi;
+            bookServiceList = bksrv;
         }
         public List<string> Books { get; set; }
         public List<string> Prices { get; set; }
@@ -18,6 +22,8 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
         public List<string> Links { get; set; }
         public Query query { get; set; }
         public IBasicWebScrapperSite webScrapperImplementation { get; set; }
+        public BookServiceList bookServiceList { get; set; }
+
         public void BuildFullUrlToSearch(string inputValue, string authorName, string title, string siteName)
         {
             StringBuilder sb = new StringBuilder();
@@ -56,6 +62,21 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
             AuthorsNodes = webScrapperImplementation.GetFirstDescendant(AuthorsNodes, "a");
             Authors = webScrapperImplementation.GetNamesFromNodes(AuthorsNodes);
             Links = webScrapperImplementation.GetStringFromAttribute(LinkNodes, "href");
+
+            for (int i = 0; i < Books.Count; i++)
+            {
+                var match = Regex.Match(Prices[i], @"\d+([.,]\d{1,2})?");
+                if (match.Success)
+                {
+                    string filteredValue = match.Value.Replace(".", ",");
+
+                    if (decimal.TryParse(filteredValue, out decimal price))
+                    {
+                        bookServiceList.FullListOfBooks.Add(new($"{this.Authors[i]}-{Books[i]}", price, Links[i]));
+                    }
+                }
+
+            }
         }
     }
 }

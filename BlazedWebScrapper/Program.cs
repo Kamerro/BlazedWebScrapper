@@ -11,6 +11,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<IBasicWebScrapperSite,WebScrapperImplementation>();
 builder.Services.AddSingleton<IFactorySearcher, FactorySearcher>();
+builder.Services.AddTransient<BookServiceList>();
+
 
 var app = builder.Build();
 
