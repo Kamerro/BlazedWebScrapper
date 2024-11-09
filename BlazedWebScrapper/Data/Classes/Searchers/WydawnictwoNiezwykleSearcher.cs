@@ -63,7 +63,7 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
             Authors = webScrapperImplementation.GetNamesFromNodes(AuthorsNodes);
             Links = webScrapperImplementation.GetStringFromAttribute(LinkNodes, "href");
 
-            for (int i = 0; i < Books.Count; i++)
+            for(int i = 0; i < Books.Count && i < Authors.Count && i < Links.Count; i++)
             {
                 var match = Regex.Match(Prices[i], @"\d+([.,]\d{1,2})?");
                 if (match.Success)

@@ -72,7 +72,7 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
                 Links[i] = consts.NaszaKsiegarniaBase + Links[i];
             }
 
-            for (int i = 0; i < Books.Count; i++)
+            for (int i = 0; i < Books.Count && i < Authors.Count && i < Links.Count; i++)
             {
                 var match = Regex.Match(Prices[i], @"\d+([.,]\d{1,2})?");
                 if (match.Success)
