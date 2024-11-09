@@ -15,7 +15,7 @@ namespace BlazedWebScrapper.Data.Interfaces
         public List<HtmlNode> GetAllDescendant(List<HtmlNode> nodes, string htmlTag);
         public List<HtmlNode> GetDescandant(List<HtmlNode> nodes, string htmlTag, int desc);
         public List<HtmlNode> GetDescendantsWhereAttributeContains(List<HtmlNode> nodes, string htmlTag, string attribute, string substring);
-
+        public HtmlNode GetNearEndDescandant(List<HtmlNode> nodes, string htmlTag);
 
     }
 }

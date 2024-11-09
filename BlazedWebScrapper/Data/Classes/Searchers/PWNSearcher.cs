@@ -40,9 +40,7 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
         {
             SetupForSearch();
             GenerateAllImportantInfoAboutBooks();
-            LinkService linkService = new LinkService(Links,consts.PWNBase);
-            linkService.GenerateLinks();
-            bookServiceList.GenerateFullListOfBooks(Books, Authors, Links,Prices);
+          
         }
         private void SetupForSearch()
         {
@@ -52,10 +50,21 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
         }
         private void GenerateAllImportantInfoAboutBooks()
         {
-            Books = ExtractData("", "data-productname", "div");
-            Prices = ExtractData("", "data-productprice", "div");
-            Authors = ExtractAuthors();
-            Links = ExtractLinks();
+            var pagination = webScrapperImplementation.AllNodes(doc, "pagination", "class", "div");
+            var paginationNode = webScrapperImplementation.GetNearEndDescandant(pagination,"li");
+            pagination = webScrapperImplementation.GetFirstDescendant( new List<HtmlNode>() { paginationNode }, "a");
+            var paginationText = webScrapperImplementation.GetNamesFromNodes(pagination)[0];
+            for (int i = 1; i <= int.Parse(paginationText); i++)
+            {
+                fullText = fullText + ($"&page={paginationText}&sortBy=score");
+                Books = ExtractData("", "data-productname", "div");
+                Prices = ExtractData("", "data-productprice", "div");
+                Authors = ExtractAuthors();
+                Links = ExtractLinks();
+                LinkService linkService = new LinkService(Links, consts.PWNBase);
+                linkService.GenerateLinks();
+                bookServiceList.GenerateFullListOfBooks(Books, Authors, Links, Prices);
+            }
         }
         private List<string> ExtractLinks()
         {

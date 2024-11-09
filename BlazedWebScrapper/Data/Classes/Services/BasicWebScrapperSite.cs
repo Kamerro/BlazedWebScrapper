@@ -74,6 +74,13 @@ namespace BlazedWebScrapper.Data.Classes.Services
             nodes.ForEach(x => { if (x is not null) innerNodes.Add(x.Descendants(htmlTag)?.ToList()[number]); });
             return innerNodes;
         }
+        public HtmlNode GetNearEndDescandant(List<HtmlNode> nodes, string htmlTag)
+        {
+            List<HtmlNode> innerNodes = new List<HtmlNode>();
+            nodes.ForEach(x => { if (x is not null) innerNodes.AddRange(x.Descendants(htmlTag)?.ToList()); });
+
+            return innerNodes[innerNodes.Count - 2];
+        }
         public List<HtmlNode> GetDescendantsWhereAttributeContains(List<HtmlNode> nodes, string htmlTag, string attribute, string substring)
         {
             List<HtmlNode> innerNodes = new List<HtmlNode>();
