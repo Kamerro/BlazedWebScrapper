@@ -5,6 +5,8 @@ using System.Text;
 using BlazedWebScrapper.Data.Classes.Queries;
 using BlazedWebScrapper.Data.Classes.Services;
 using System.Text.RegularExpressions;
+using BlazedWebScrapper.Data.Classes.BookHelpers;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace BlazedWebScrapper.Data.Classes.Searchers
 {
@@ -15,7 +17,12 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
             query = _query;
             webScrapperImplementation = wsi;
             bookServiceList = bksrv;
+            queryBuilder = new BookQueryHelper();
         }
+        HtmlDocument doc;
+        HtmlWeb web;
+        ConstsBookScrapper consts = new ConstsBookScrapper();
+        string fullText;
         public List<string> Books { get; set; }
         public List<string> Prices { get; set; }
         public List<string> Authors { get; set; }
@@ -23,60 +30,60 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
         public Query query { get; set; }
         public IBasicWebScrapperSite webScrapperImplementation { get; set; }
         public BookServiceList bookServiceList { get; set; }
+        private BookQueryHelper queryBuilder;
 
         public void BuildFullUrlToSearch(string inputValue, string authorName, string title, string siteName)
         {
-            StringBuilder sb = new StringBuilder();
-            if (string.IsNullOrEmpty(inputValue))
-            {
-                sb.Append(authorName);
-                sb.Append(" ");
-                sb.Append(title);
-            }
-            else
-            {
-                sb.Append(inputValue);
-            }
-            query.ObjectOfInterest = sb.ToString();
+            query.ObjectOfInterest = queryBuilder.BuildObjectOfInterest(inputValue, authorName, title);
             query.UrlWithSiteName = siteName;
             webScrapperImplementation.FullUrlToReadFrom = $"{query.UrlWithSiteName}{query.ObjectOfInterest}";
         }
+        private void SetupForSearch()
+        {
+            fullText = webScrapperImplementation.FullUrlToReadFrom;
+            web = new HtmlWeb();
+            doc = web.Load(fullText);
+        }
         public void SearchText()
         {
-            ConstsBookScrapper consts = new ConstsBookScrapper();
-            string fullText = webScrapperImplementation.FullUrlToReadFrom;
-            var web = new HtmlWeb();
-            var doc = web.Load(fullText);
-            //do constów można dodać magic stringi
-            var BooksNodes = webScrapperImplementation.AllNodes(doc, "row touchwrap", "class", "div");
-            var LinkNodes = webScrapperImplementation.GetAllDescendant(BooksNodes, "div");
+            SetupForSearch();
+            GenerateAllImportantInfoAboutBooks();
+            LinkService linkService = new LinkService(Links, consts.NiezwykleBase);
+            linkService.GenerateLinks();
+            bookServiceList.GenerateFullListOfBooks(Books, Authors, Links, Prices);
+        }
+        private void GenerateAllImportantInfoAboutBooks()
+        {
+            Books = ExtractBooks();
+            Prices = ExtractPrices();
+            Authors = ExtractAuthors();
+            Links = ExtractLinks();
+        }
+        private List<string> ExtractLinks()
+        {
+            var LinkNodes = webScrapperImplementation.AllNodes(doc, "row touchwrap", "class", "div");
             LinkNodes = webScrapperImplementation.GetDescendantsWhereAttributeContains(LinkNodes, "div", "class", "product-box");
             LinkNodes = webScrapperImplementation.GetDescandant(LinkNodes, "a", 1);
-            BooksNodes = webScrapperImplementation.GetAllDescendant(BooksNodes, "h6");
-            Books = webScrapperImplementation.GetNamesFromNodes(BooksNodes);
-            List<HtmlNode> nodePricesValues = webScrapperImplementation.AllNodes(doc, "cena-box", "class", "div");
-            nodePricesValues = webScrapperImplementation.GetFirstDescendant(nodePricesValues, "p", "span", "strike");
-            Prices = webScrapperImplementation.GetNamesFromNodes(nodePricesValues);
+            return webScrapperImplementation.GetStringFromAttribute(LinkNodes, "href");
+        }
+        private List<string> ExtractAuthors()
+        {
             var AuthorsNodes = webScrapperImplementation.AllNodes(doc, "desc", "class", "div");
             AuthorsNodes = webScrapperImplementation.GetFirstDescendant(AuthorsNodes, "p");
             AuthorsNodes = webScrapperImplementation.GetFirstDescendant(AuthorsNodes, "a");
-            Authors = webScrapperImplementation.GetNamesFromNodes(AuthorsNodes);
-            Links = webScrapperImplementation.GetStringFromAttribute(LinkNodes, "href");
-
-            for(int i = 0; i < Books.Count && i < Authors.Count && i < Links.Count; i++)
-            {
-                var match = Regex.Match(Prices[i], @"\d+([.,]\d{1,2})?");
-                if (match.Success)
-                {
-                    string filteredValue = match.Value.Replace(".", ",");
-
-                    if (decimal.TryParse(filteredValue, out decimal price))
-                    {
-                        bookServiceList.FullListOfBooks.Add(new($"{this.Authors[i]}-{Books[i]}", price, Links[i]));
-                    }
-                }
-
-            }
+            return webScrapperImplementation.GetNamesFromNodes(AuthorsNodes);
+        }
+        private List<string> ExtractBooks()
+        {
+            var BooksNodes = webScrapperImplementation.AllNodes(doc, "row touchwrap", "class", "div");
+            BooksNodes = webScrapperImplementation.GetAllDescendant(BooksNodes, "h6");
+            return webScrapperImplementation.GetNamesFromNodes(BooksNodes);
+        }
+        private List<string> ExtractPrices()
+        {
+            List<HtmlNode> nodePricesValues = webScrapperImplementation.AllNodes(doc, "cena-box", "class", "div");
+            nodePricesValues = webScrapperImplementation.GetFirstDescendant(nodePricesValues, "p", "span", "strike");
+            return webScrapperImplementation.GetNamesFromNodes(nodePricesValues);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace BlazedWebScrapper.Data.Classes.Searchers
+﻿namespace BlazedWebScrapper.Data.Classes.Services
 {
     internal class LinkService
     {
@@ -7,8 +7,8 @@
 
         public LinkService(List<string> links, string pWNBase)
         {
-            this._links = links;
-            this._PWNBase = pWNBase;
+            _links = links;
+            _PWNBase = pWNBase;
         }
 
         public void GenerateLinks()

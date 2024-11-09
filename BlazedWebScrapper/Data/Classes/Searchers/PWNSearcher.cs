@@ -1,4 +1,5 @@
-﻿using BlazedWebScrapper.Data.Classes.Consts;
+﻿using BlazedWebScrapper.Data.Classes.BookHelpers;
+using BlazedWebScrapper.Data.Classes.Consts;
 using BlazedWebScrapper.Data.Classes.Queries;
 using BlazedWebScrapper.Data.Classes.Services;
 using BlazedWebScrapper.Data.Interfaces;
@@ -15,6 +16,7 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
             query = _query;
             webScrapperImplementation = wsi;
             bookServiceList = bksrv;
+            queryBuilder = new BookQueryHelper();
         }
         HtmlDocument doc;
         HtmlWeb web;
@@ -27,7 +29,7 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
         public Query query { get; set; }
         public IBasicWebScrapperSite webScrapperImplementation { get; set; }
         public BookServiceList bookServiceList { get; set; }
-        private BookQueryBuiulder queryBuilder;
+        private BookQueryHelper queryBuilder;
         public void BuildFullUrlToSearch(string inputValue, string authorName, string title, string siteName)
         {
             query.ObjectOfInterest = queryBuilder.BuildObjectOfInterest(inputValue, authorName, title);

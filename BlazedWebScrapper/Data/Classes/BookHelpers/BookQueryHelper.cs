@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-namespace BlazedWebScrapper.Data.Classes.Searchers
+namespace BlazedWebScrapper.Data.Classes.BookHelpers
 {
-    internal class BookQueryBuiulder
+    internal class BookQueryHelper
     {
         internal string BuildObjectOfInterest(string inputValue, string authorName, string title)
         {
