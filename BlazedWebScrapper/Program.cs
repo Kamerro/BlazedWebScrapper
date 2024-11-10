@@ -21,7 +21,6 @@ builder.Services.AddTransient<BookService>();
 
 builder.Services.AddScoped<FlightService>();
 builder.Services.AddScoped<EmailSender>();
-builder.Services.AddSingleton<WeatherForecastService>();
 
 var app = builder.Build();
 
