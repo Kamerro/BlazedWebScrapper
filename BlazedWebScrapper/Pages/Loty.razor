@@ -1,0 +1,41 @@
+﻿@page "/loty"
+@using BlazedWebScrapper.Data
+@using BlazedWebScrapper.Entities
+@inject FlightService FlightService
+
+<PageTitle>Loty</PageTitle>
+
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (flights == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var flight in flights)
+            {
+                <tr>
+                    <td>@flight.StartDestination</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<FlightModel> flights;
+
+    protected override async Task OnInitializedAsync()
+    {
+        flights = await FlightService.GetFlightsAsync();
+    }
+}
