@@ -1,4 +1,5 @@
 ﻿using BlazedWebScrapper.Data.Classes.BookHelpers;
+using BlazedWebScrapper.Data.Classes.Configuration;
 using BlazedWebScrapper.Data.Classes.Consts;
 using BlazedWebScrapper.Data.Classes.Queries;
 using BlazedWebScrapper.Data.Classes.Services;
@@ -9,7 +10,7 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
 {
     public class PWNSearcher : ISearcherBooks
     {
-        public PWNSearcher(Query _query, IBasicWebScrapperSite wsi, BookServiceList bksrv)
+        public PWNSearcher(Query _query, IBasicWebScrapperSite wsi, BookService bksrv)
         {
             query = _query;
             webScrapperImplementation = wsi;
@@ -27,7 +28,7 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
         public List<string> Links { get; set; }
         public Query query { get; set; }
         public IBasicWebScrapperSite webScrapperImplementation { get; set; }
-        public BookServiceList bookServiceList { get; set; }
+        public BookService bookServiceList { get; set; }
         private BookQueryHelper queryBuilder;
         BookDataExtraction bookDataExtraction;
         public void BuildFullUrlToSearch(string inputValue, string authorName, string title, string siteName)
@@ -51,16 +52,25 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
         private void GenerateAllImportantInfoAboutBooks()
         {
             var paginationText = bookDataExtraction.GetPaginationPWN(doc);
+            string baseURL = webScrapperImplementation.FullUrlToReadFrom;
             for (int i = 1; i <= paginationText; i++)
             {
-                fullText = fullText + $"&page={i}&sortBy=score";
-                Books = bookDataExtraction.ExtractDataPWN(doc,"", "data-productname", "div");
-                Prices = bookDataExtraction.ExtractDataPWN(doc,"", "data-productprice", "div");
-                Authors = bookDataExtraction.ExtractAuthorsPWN(doc);
-                Links = bookDataExtraction.ExtractLinksPWN(doc);
-                LinkService linkService = new LinkService(Links, consts.PWNBase);
-                linkService.GenerateLinks();
-                bookServiceList.GenerateFullListOfBooks(Books, Authors, Links, Prices);
+                if (bookServiceList.FullListOfBooks.Count < bookServiceList.filterSpecification.MaxResults)
+                {
+                    webScrapperImplementation.FullUrlToReadFrom = baseURL + $"&page={i}";
+                    SetupForSearch();
+                    Books = bookDataExtraction.ExtractDataPWN(doc, "", "data-productname", "div");
+                    Prices = bookDataExtraction.ExtractDataPWN(doc, "", "data-productprice", "div");
+                    Authors = bookDataExtraction.ExtractAuthorsPWN(doc);
+                    Links = bookDataExtraction.ExtractLinksPWN(doc);
+                    LinkService linkService = new LinkService(Links, consts.PWNBase);
+                    linkService.GenerateLinks();
+                    bookServiceList.GenerateFullListOfBooks(Books, Authors, Links, Prices);
+                }
+                else
+                {
+                    break;
+                }
             }
         }
     }

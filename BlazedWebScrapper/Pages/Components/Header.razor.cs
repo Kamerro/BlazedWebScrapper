@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazedWebScrapper.Data.Classes.Services;
+using Microsoft.AspNetCore.Components;
 
 namespace BlazedWebScrapper.Pages.Components
 {

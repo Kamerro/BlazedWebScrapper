@@ -1,7 +1,6 @@
 ﻿using BlazedWebScrapper.Data.Classes.Consts;
 using BlazedWebScrapper.Data.Interfaces;
 using HtmlAgilityPack;
-using System.Text;
 using BlazedWebScrapper.Data.Classes.Queries;
 using BlazedWebScrapper.Data.Classes.Services;
 using System.Text.RegularExpressions;
@@ -12,7 +11,7 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
 {
     public class WydawnictwoNiezwykleSearcher : ISearcherBooks
     {
-        public WydawnictwoNiezwykleSearcher(Query _query, IBasicWebScrapperSite wsi, BookServiceList bksrv)
+        public WydawnictwoNiezwykleSearcher(Query _query, IBasicWebScrapperSite wsi, BookService bksrv)
         {
             query = _query;
             webScrapperImplementation = wsi;
@@ -29,7 +28,7 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
         public List<string> Links { get; set; }
         public Query query { get; set; }
         public IBasicWebScrapperSite webScrapperImplementation { get; set; }
-        public BookServiceList bookServiceList { get; set; }
+        public BookService bookServiceList { get; set; }
         private BookQueryHelper queryBuilder;
 
         public void BuildFullUrlToSearch(string inputValue, string authorName, string title, string siteName)

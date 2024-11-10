@@ -18,8 +18,8 @@ namespace BlazedWebScrapper.Pages
         public IFactorySearcher factorySearcher { get; set; }
 
         [Inject]
-        public BookServiceList bookServiceList { get; set; }
-
+        public BookService bookService { get; set; }
+        FilteringSpecification filtering = new FilteringSpecification();
         private ISearcherBooks searcherBooksCzytelnik;
         private ISearcherBooks searcherBooksPWN;
         private ISearcherBooks searcherBooksNiezwykle;
@@ -31,22 +31,28 @@ namespace BlazedWebScrapper.Pages
         private Book searchBook;
         private List<Book> listOfBooks;
         private Query query;
+        private bool isRenderDone;
+        private void TriggerStatusChange()
+        {
+            StateHasChanged();
+        }
         void SearchPredefinedBook(string inputValue)
         {
-            searcherBooksNaszaKsiegarnia = factorySearcher.GetSearcher("Nasza", query, webScrapperImplementation,bookServiceList);
+            bookService.FullListOfBooks.Clear();
+            searcherBooksNaszaKsiegarnia = factorySearcher.GetSearcher("Nasza", query, webScrapperImplementation,bookService);
             searcherBooksNaszaKsiegarnia.BuildFullUrlToSearch(inputValue, searchBook.Author.Name, searchBook.Title, consts.NaszaSite);
             searcherBooksNaszaKsiegarnia.SearchText();
-            searcherBooksCzytelnik = factorySearcher.GetSearcher("Czytelnik", query, webScrapperImplementation, bookServiceList);
+            searcherBooksCzytelnik = factorySearcher.GetSearcher("Czytelnik", query, webScrapperImplementation, bookService);
             searcherBooksCzytelnik.BuildFullUrlToSearch(inputValue, searchBook.Author.Name, searchBook.Title, consts.CzytelnikSite);
             searcherBooksCzytelnik.SearchText();
-            searcherBooksPWN = factorySearcher.GetSearcher("PWN", query, webScrapperImplementation, bookServiceList);
+            searcherBooksPWN = factorySearcher.GetSearcher("PWN", query, webScrapperImplementation, bookService);
             searcherBooksPWN.BuildFullUrlToSearch(inputValue, searchBook.Author.Name, searchBook.Title, consts.PWNSite);
             searcherBooksPWN.SearchText();
-            searcherBooksNiezwykle = factorySearcher.GetSearcher("Niezwykle", query, webScrapperImplementation, bookServiceList);
+            searcherBooksNiezwykle = factorySearcher.GetSearcher("Niezwykle", query, webScrapperImplementation, bookService);
             searcherBooksNiezwykle.BuildFullUrlToSearch(inputValue, searchBook.Author.Name, searchBook.Title, consts.NiezwykleSite);
             searcherBooksNiezwykle.SearchText();
 
-            bookServiceList.FullListOfBooks = bookServiceList.FullListOfBooks.OrderBy(x => x.Item2).ToList();
+            bookService.FullListOfBooks = bookService.FullListOfBooks.OrderBy(x => x.Item2).ToList();
             isSearchDone = true;
         }
         protected override void OnInitialized()
@@ -58,6 +64,9 @@ namespace BlazedWebScrapper.Pages
             query = new Query();
             tabConfigurator.TileColor = Color.Green.Name;
             listOfBooks.InitializeBooks();
+            filtering.isFilteringAvailable = false;
+            isRenderDone = true;
+            bookService.filterSpecification = filtering;
         }
     }
 }

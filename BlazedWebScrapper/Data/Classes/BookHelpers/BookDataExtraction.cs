@@ -11,7 +11,7 @@ namespace BlazedWebScrapper.Data.Classes.BookHelpers
             this.site = site;
             this.webScrapperImplementation = webScrapperImplementation;
         }
-
+        private string site;
         public List<string> ExtractAuthorsPWN(HtmlDocument doc)
         {
             var AuthorNodes = webScrapperImplementation.AllNodes(doc, "emp-info-authors", "class", "div");

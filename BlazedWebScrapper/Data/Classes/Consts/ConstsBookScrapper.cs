@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
-using static System.Net.WebRequestMethods;
-
+﻿
 namespace BlazedWebScrapper.Data.Classes.Consts
 {
     public class ConstsBookScrapper{ 
-         //nk.com.pl
          //albatros (ciężkie)
         const string productWrapper = "product s-grid-3 product-main-wrap";
         const string aTag = "a";

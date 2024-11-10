@@ -23,9 +23,9 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
         public List<string> Links { get; set; }
         public Query query { get; set; }
         public IBasicWebScrapperSite webScrapperImplementation { get; set; }
-        public BookServiceList bookServiceList { get; set; }
+        public BookService bookServiceList { get; set; }
         private BookQueryHelper queryBuilder;
-        public CzytelnikSearcher(Query _query, IBasicWebScrapperSite wsi, BookServiceList bksrv)
+        public CzytelnikSearcher(Query _query, IBasicWebScrapperSite wsi, BookService bksrv)
         {
             query = _query;
             webScrapperImplementation = wsi;
