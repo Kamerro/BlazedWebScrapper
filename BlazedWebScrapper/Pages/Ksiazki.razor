@@ -1,51 +1,29 @@
 ﻿@page "/ksiegarnia"
+@using BlazedWebScrapper.Data.Classes.Configuration;
+@using BlazedWebScrapper.Data.Classes.Consts;
+@using BlazedWebScrapper.Data.Classes.Data;
+@using BlazedWebScrapper.Data.Classes.Queries;
+@using BlazedWebScrapper.Data.Classes.Services;
+@using BlazedWebScrapper.Data.Interfaces;
+@using System.Drawing;
 @using BlazedWebScrapper.Data;
-@using BlazedWebScrapper.Pages.RazorComponents;
-<PageTitle>Ksiegarnia</PageTitle>
-
-<h1>Tutaj książki</h1>
-
-<button onclick="@(()=> {click = "Lol ale troll";})"> @((MarkupString)click) </button>
-<h2>@siemaEniu + @(2+2)</h2>
-
-@if(number == 10)
-{
-    <p>Number is 10</p>
-}
-else
-{
-    <p>number is not 10</p>
-}
-
-<input type="checkbox" name="this" onclick="@TrueOrFalse"/>
-
-@foreach (var client in clients)
-{
-    @if (!value)
-    {
-        <ClientComponent client="client"></ClientComponent>
-    }
-
-}
-<InputComponent placeholder="Placeholder 01" type="text" disabled ="true" ></InputComponent>
-
-
-@code{
-    public List<Client> clients;
-    public string click = "<b>Click<b>";
-    public string siemaEniu = "Eniu hej ";
-    public int number = 1;
-    public bool value = false;
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        clients = new List<Client>() {
-        new Client() {
-            Name = "First", ID = "01" },
-       new Client() { Name = "Sec", ID = "02" } };
-    }
-    public void TrueOrFalse()
-    {
-        value = !value;
-    }
-}
+@using BlazedWebScrapper.Pages.Components
+<body>
+    <div>
+        <Header SearchPredefinedBook="SearchPredefinedBook" AuthorName="@searchBook.Author.Name" Title="@searchBook.Title"></Header>
+        <div>
+            @if (isRenderDone)
+            {
+                <FilteringOptions  FSpec="filtering" DataChangedTriggerFlow="TriggerStatusChange"></FilteringOptions>
+                @if (isSearchDone)
+                {
+                    <ListOfSortedBooks FullListOfBooks="bookService.FullListOfBooks"></ListOfSortedBooks>
+                   @* <TableResult Link="searcherBooksNaszaKsiegarnia.Links" Author="searcherBooksNaszaKsiegarnia.Authors" BooksNames="searcherBooksNaszaKsiegarnia.Books" PricePerBook="searcherBooksNaszaKsiegarnia.Prices" Source="NK"></TableResult>
+                    <TableResult Link="searcherBooksCzytelnik.Links" Author="searcherBooksCzytelnik.Authors" BooksNames="searcherBooksCzytelnik.Books" PricePerBook="searcherBooksCzytelnik.Prices" Source="Czytelnik"></TableResult>
+                    <TableResult Link="searcherBooksPWN.Links" Author="searcherBooksPWN.Authors" BooksNames="searcherBooksPWN.Books" PricePerBook="searcherBooksPWN.Prices" Source="PWN"></TableResult>
+                    <TableResult Link="searcherBooksNiezwykle.Links" Author="searcherBooksNiezwykle.Authors" BooksNames="searcherBooksNiezwykle.Books" PricePerBook="searcherBooksNiezwykle.Prices" Source="WN"></TableResult>*@
+                }
+            }
+        </div>
+    </div>
+</body>

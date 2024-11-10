@@ -1,0 +1,33 @@
+﻿body {
+}
+.filteringWarning {
+    background-image: linear-gradient(#EEAAAA, #AAAAFF);
+    color: transparent;
+    background-clip: text;
+    text-align:center;
+}
+.filterDiv{
+    border:solid;
+    border-width:2px;
+    border-color:antiquewhite;
+}
+.filterCheckBoxMaxResults{
+    margin-left:5%;
+}
+
+.filterCheckBoxMaxPrice {
+    margin-left: 5%;
+}
+.buttonSaveChanges{
+    margin-left:5%;
+    background-color:orangered;
+    color:black;
+}
+.red-border{
+    border:solid;
+    border-width:2px;
+    border-color:red;
+    width:50%;
+    margin-left:25%;
+    margin-bottom:1%;
+}

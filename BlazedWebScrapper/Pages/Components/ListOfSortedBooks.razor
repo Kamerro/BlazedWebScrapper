@@ -1,0 +1,42 @@
+﻿<br/>
+<br />
+<br />
+<h3 class="text-center">Poniżej znajdziesz posortowane książki względem ceny!</h3>
+<br/>
+<br />
+
+    <table class="listedBooks" style="text-align:center;">
+        <tr>
+            <td>
+                Książka
+            </td>
+            <td>
+                Cena
+            </td>
+
+        </tr>
+        @if (FullListOfBooks is not null)
+        {
+            @foreach (var obj in FullListOfBooks)
+            {
+                <tr>
+                    <td>
+                        <a href=@obj.Item3 target="_blank">
+                            <h6>@obj.Item1</h6>
+                        </a>
+                    </td>
+                    <td>
+                        <h6>@obj.Item2</h6>
+                    </td>
+
+                </tr>
+            }
+        }
+
+    </table>
+    <br />
+    <br />
+@code {
+    [Parameter]
+    public List<Tuple<string, decimal, string>> FullListOfBooks { get; set; } = new List<Tuple<string, decimal, string>>();
+}

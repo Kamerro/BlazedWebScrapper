@@ -1,0 +1,7 @@
+﻿body {
+}
+h2 {
+    background-image: linear-gradient(aqua, white);
+    color: transparent;
+    background-clip: text;
+}

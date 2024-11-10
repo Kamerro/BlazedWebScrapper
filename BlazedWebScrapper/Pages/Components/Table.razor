@@ -1,0 +1,30 @@
+﻿@using BlazedWebScrapper.Data.Classes.Data;
+<table style="text-align:center;">
+    <tr>
+        <th>Autor</th>
+        <th>Tytuł</th>
+    </tr>
+    @if (isInitialized)
+    {
+        for (int id = 0; id < ListOfBooks.Count; id++)
+        {
+            var line = ListOfBooks[id];
+            <tr>
+                <td @onclick="() => SetAuthor.Invoke(SearchBook,line.Author.Name)"
+                    style="background-color:@listOfCellsColorsAuthors[id]">
+                    <h4>@line.Author.Name @listOfCellsColorsAuthors[id]</h4>
+                </td>
+
+                <td @onclick="() => SetTitle.Invoke(SearchBook,line.Title)">
+                    <h4>@line.Title</h4>
+                </td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="2">Loading...</td>
+        </tr>
+    }
+</table>
