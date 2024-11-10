@@ -1,0 +1,29 @@
+﻿@page "/ksiegarnia"
+@using BlazedWebScrapper.Data.Classes.Configuration;
+@using BlazedWebScrapper.Data.Classes.Consts;
+@using BlazedWebScrapper.Data.Classes.Data;
+@using BlazedWebScrapper.Data.Classes.Queries;
+@using BlazedWebScrapper.Data.Classes.Services;
+@using BlazedWebScrapper.Data.Interfaces;
+@using System.Drawing;
+@using BlazedWebScrapper.Data;
+@using BlazedWebScrapper.Pages.Components
+<body>
+    <div>
+        <Header SearchPredefinedBook="SearchPredefinedBook" AuthorName="@searchBook.Author.Name" Title="@searchBook.Title"></Header>
+        <div>
+            @if (isRenderDone)
+            {
+                <FilteringOptions  FSpec="filtering" DataChangedTriggerFlow="TriggerStatusChange"></FilteringOptions>
+                @if (isSearchDone)
+                {
+                    <ListOfSortedBooks FullListOfBooks="bookService.FullListOfBooks"></ListOfSortedBooks>
+                   @* <TableResult Link="searcherBooksNaszaKsiegarnia.Links" Author="searcherBooksNaszaKsiegarnia.Authors" BooksNames="searcherBooksNaszaKsiegarnia.Books" PricePerBook="searcherBooksNaszaKsiegarnia.Prices" Source="NK"></TableResult>
+                    <TableResult Link="searcherBooksCzytelnik.Links" Author="searcherBooksCzytelnik.Authors" BooksNames="searcherBooksCzytelnik.Books" PricePerBook="searcherBooksCzytelnik.Prices" Source="Czytelnik"></TableResult>
+                    <TableResult Link="searcherBooksPWN.Links" Author="searcherBooksPWN.Authors" BooksNames="searcherBooksPWN.Books" PricePerBook="searcherBooksPWN.Prices" Source="PWN"></TableResult>
+                    <TableResult Link="searcherBooksNiezwykle.Links" Author="searcherBooksNiezwykle.Authors" BooksNames="searcherBooksNiezwykle.Books" PricePerBook="searcherBooksNiezwykle.Prices" Source="WN"></TableResult>*@
+                }
+            }
+        </div>
+    </div>
+</body>
