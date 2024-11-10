@@ -19,6 +19,8 @@ builder.Services.AddSingleton<IBasicWebScrapperSite,WebScrapperImplementation>()
 builder.Services.AddSingleton<IFactorySearcher, FactorySearcher>();
 builder.Services.AddTransient<BookService>();
 
+builder.Services.AddScoped<FlightService>();
+builder.Services.AddScoped<EmailSender>();
 
 var app = builder.Build();
 

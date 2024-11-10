@@ -17,8 +17,8 @@ namespace BlazedWebScrapper.Entities
         public DateTime StartTripArrival { get; set; }
         public DateTime EndTripDeparture { get; set; }
         public DateTime EndTripArrival { get; set; }
-        public TimeSpan TimeOfStartTrip { get; set; }
-        public TimeSpan TimeOfEndTrip { get; set; }
+        public TimeOnly TimeOfStartTrip { get; set; }
+        public TimeOnly TimeOfEndTrip { get; set; }
         public float StartTripPrice { get; set; }
         public float EndTripPrice { get; set; }
         public float Price { get; set; }

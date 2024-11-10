@@ -1,6 +1,10 @@
-﻿using BlazedWebScrapper.Entities;
+﻿using BlazedWebScrapper.Data.Flight;
+using BlazedWebScrapper.Data.Flight.ExtensionMethods;
+using BlazedWebScrapper.Entities;
 using HtmlAgilityPack;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 using WebScrapper;
 
 namespace BlazedWebScrapper.Data
@@ -8,14 +12,16 @@ namespace BlazedWebScrapper.Data
     public class FlightService
 	{
 		private WebScrapperDbContext _dbContext;
+		private EmailSender _email;
 		string url = "https://www.azair.eu/azfin.php?searchtype=flexi&tp=0&isOneway=return&srcAirport=Poland+%5BSZY%5D+%28%2BKRK%2CKTW%29&srcap10=KRK&srcap11=KTW&srcFreeAirport=&srcTypedText=po&srcFreeTypedText=&srcMC=PL&dstAirport=Anywhere+%5BXXX%5D&anywhere=true&dstap0=LIN&dstap1=BGY&dstFreeAirport=&dstTypedText=xxx&dstFreeTypedText=&dstMC=&depmonth=202410&depdate=2024-10-03&aid=0&arrmonth=202412&arrdate=2024-12-31&minDaysStay=5&maxDaysStay=8&dep0=true&dep1=true&dep2=true&dep3=true&dep4=true&dep5=true&dep6=true&arr0=true&arr1=true&arr2=true&arr3=true&arr4=true&arr5=true&arr6=true&samedep=true&samearr=true&minHourStay=0%3A45&maxHourStay=23%3A20&minHourOutbound=0%3A00&maxHourOutbound=24%3A00&minHourInbound=0%3A00&maxHourInbound=24%3A00&autoprice=true&adults=1&children=0&infants=0&maxChng=1&currency=PLN&lang=en&indexSubmit=Search";
 
-        public FlightService(WebScrapperDbContext dbContext)
+        public FlightService(WebScrapperDbContext dbContext, EmailSender email)
         {
             _dbContext = dbContext;
+			_email = email;
         }
 
-        public async Task<List<FlightModel>> GetFlightsAsync()
+        public List<FlightModel> GetFlights()
         {
 			var web = new HtmlWeb();
 			var document = web.Load(url);
@@ -27,116 +33,124 @@ namespace BlazedWebScrapper.Data
 			{
 				var divText = row.InnerText;
 
-				var flightInfo = GetThereBackFlight(divText);
-				flightModels.Add(ParseFlightDetails(flightInfo));
+				var flightInfo = ThereBackFlightParser.GetFlightInfo(divText);
+				//flightModels.Add(ParseFlightDetails(flightInfo));
+				flightModels.Add(flightInfo.Parse());
             }
 
-            // Dodanie lotów do bazy danych
+            // Usuwanie i Dodanie lotów do bazy danych
+            var allFlights = _dbContext.FlightModels.ToList();
+            _dbContext.FlightModels.RemoveRange(allFlights);
             _dbContext.FlightModels.AddRange(flightModels);
             _dbContext.SaveChanges();
 
-            return await _dbContext.FlightModels.ToListAsync(); // użycie asynchronicznej metody
+            // Tworzenie maila
+            List<FlightModel> cheepestFlight = null;
+
+            // LINQ
+            cheepestFlight = _dbContext
+            .FlightModels
+            .OrderBy(f => f.Price)
+            .Take(5)
+            .ToList();
+
+			var emailReceiver = "zbigniew.sr@interia.pl";
+
+            var email = new EmailSender(new EmailParams
+            {
+                HostSmtp = "poczta.interia.pl",
+                Port = 587,
+                EnableSsl = true,
+                SenderName = "Webscrapper Info",
+                SenderEmail = "webscrapper.mail@interia.pl",
+                SenderEmailPassword = "WEBscrapper123!"
+            });
+
+			var mailText = MailTextFormatter.GetText(cheepestFlight);
+
+
+            email.Send(
+                "Tanie loty",
+                mailText,
+                emailReceiver);
+
+            return _dbContext.FlightModels.ToList(); // użycie asynchronicznej metody
         }
 
-		public FlightModel ParseFlightDetails(FlightInfo flightDetails)
-		{
-			string thereDetails = flightDetails.There;
-			string backDetails = flightDetails.Back;
 
-			List<int> thereTimesIndex = new List<int>();
-			List<int> backTimesIndex = new List<int>();
 
-			// Parse "There" details
-			string[] thereParts = thereDetails.Split(' ');
+		//public FlightModel ParseFlightDetails(ThereBackFlight flightDetails)
+		//{
+		//	string thereDetails = flightDetails.There;
+		//	string backDetails = flightDetails.Back;
 
-			// wyszukanie ":" czasów There
-			for (int i = 0; i < thereParts.Length; i++)
-			{
-				if (thereParts[i].Contains(":")) thereTimesIndex.Add(i);
-			}
+		//	List<int> thereTimesIndex = new List<int>();
+		//	List<int> backTimesIndex = new List<int>();
 
-			// tworzenie modelu There
-			string startDayOfWeek = thereParts[1];
-			DateOnly startDate = DateOnly.ParseExact(thereParts[2], "dd/MM/yy");
-			TimeOnly startDepartureTime = TimeOnly.ParseExact(thereParts[thereTimesIndex[0]], "HH:mm");
-			TimeOnly startArrivalTime = TimeOnly.ParseExact(thereParts[thereTimesIndex[1]], "HH:mm");
-			TimeSpan timeOfStartTrip = TimeSpan.ParseExact(thereParts[thereTimesIndex[2]], "hh\\:mm", null);
+		//	// Parse "There" details
+		//	string[] thereParts = thereDetails.Split(' ');
 
-			string startDestination = null;
-			string endDestination = null;
-			for (int i = 0; i < thereParts.Length; i++)
-			{
-				if (i > thereTimesIndex[0] && i < thereTimesIndex[1])
-					startDestination += thereParts[i] + " ";
+		//	// wyszukanie ":" czasów There
+		//	for (int i = 0; i < thereParts.Length; i++)
+		//	{
+		//		if (thereParts[i].Contains(":")) thereTimesIndex.Add(i);
+		//	}
 
-				if (i > thereTimesIndex[1] && i < thereTimesIndex[2])
-					endDestination += thereParts[i] + " ";
-			}
+		//	// tworzenie modelu There
+		//	string startDayOfWeek = thereParts[1];
+		//	DateOnly startDate = DateOnly.ParseExact(thereParts[2], "dd/MM/yy");
+		//	TimeOnly startDepartureTime = TimeOnly.ParseExact(thereParts[thereTimesIndex[0]], "HH:mm");
+		//	TimeOnly startArrivalTime = TimeOnly.ParseExact(thereParts[thereTimesIndex[1]], "HH:mm");
+  //          TimeOnly timeOfStartTrip = TimeOnly.ParseExact(thereParts[thereTimesIndex[2]], "H:mm");
 
-			float startTripPrice = float.Parse(thereParts[thereParts.Length - 3]);
+		//	string startDestination = null;
+		//	string endDestination = null;
+		//	for (int i = 0; i < thereParts.Length; i++)
+		//	{
+		//		if (i > thereTimesIndex[0] && i < thereTimesIndex[1])
+		//			startDestination += thereParts[i] + " ";
 
-			// Parse "Back" details
-			string[] backParts = backDetails.Split(' ');
+		//		if (i > thereTimesIndex[1] && i < thereTimesIndex[2])
+		//			endDestination += thereParts[i] + " ";
+		//	}
 
-			// wyszukanie ":" czasów Back
-			for (int i = 0; i < backParts.Length; i++)
-			{
-				if (backParts[i].Contains(":")) backTimesIndex.Add(i);
-			}
+		//	float startTripPrice = float.Parse(thereParts[thereParts.Length - 3]);
 
-			string endDayOfWeek = backParts[1];
-			DateOnly endDate = DateOnly.ParseExact(backParts[2], "dd/MM/yy");
-			TimeOnly endDepartureTime = TimeOnly.ParseExact(backParts[backTimesIndex[0]], "HH:mm");
-			TimeOnly endArrivalTime = TimeOnly.ParseExact(backParts[backTimesIndex[1]], "HH:mm");
-			TimeSpan timeOfEndTrip = TimeSpan.ParseExact(backParts[backTimesIndex[2]], "hh\\:mm", null);
+		//	// Parse "Back" details
+		//	string[] backParts = backDetails.Split(' ');
 
-			float endTripPrice = float.Parse(backParts[backParts.Length - 3]);
+		//	// wyszukanie ":" czasów Back
+		//	for (int i = 0; i < backParts.Length; i++)
+		//	{
+		//		if (backParts[i].Contains(":")) backTimesIndex.Add(i);
+		//	}
 
-			FlightModel flightModel = new FlightModel()
-			{
-				StartTripDayOfWeek = startDayOfWeek,
-				StartTripDeparture = startDate.ToDateTime(startDepartureTime),
-				StartTripArrival = startDate.ToDateTime(startArrivalTime),
-				StartDestination = startDestination,
-				EndDestination = endDestination,
-				TimeOfStartTrip = timeOfStartTrip,
-				TimeOfEndTrip = timeOfEndTrip,
-				EndTripDayOfWeek = endDayOfWeek,
-				EndTripDeparture = endDate.ToDateTime(endDepartureTime),
-				EndTripArrival = endDate.ToDateTime(endArrivalTime),
-				StartTripPrice = startTripPrice,
-				EndTripPrice = endTripPrice,
-				Price = startTripPrice + endTripPrice  // Sum of both legs
-			};
+		//	string endDayOfWeek = backParts[1];
+		//	DateOnly endDate = DateOnly.ParseExact(backParts[2], "dd/MM/yy");
+		//	TimeOnly endDepartureTime = TimeOnly.ParseExact(backParts[backTimesIndex[0]], "HH:mm");
+		//	TimeOnly endArrivalTime = TimeOnly.ParseExact(backParts[backTimesIndex[1]], "HH:mm");
+  //          TimeOnly timeOfEndTrip = TimeOnly.ParseExact(backParts[backTimesIndex[2]], "H:mm");
 
-			return flightModel;
-		}
+		//	float endTripPrice = float.Parse(backParts[backParts.Length - 3]);
 
-		public FlightInfo GetThereBackFlight(string divText)
-		{
-			bool thereFlag = false;
-			bool backFlag = false;
-			string there = null;
-			string back = null;
-			var words = divText.Split(" ");
+		//	FlightModel flightModel = new FlightModel()
+		//	{
+		//		StartTripDayOfWeek = startDayOfWeek,
+		//		StartTripDeparture = startDate.ToDateTime(startDepartureTime),
+		//		StartTripArrival = startDate.ToDateTime(startArrivalTime),
+		//		StartDestination = startDestination,
+		//		EndDestination = endDestination,
+		//		TimeOfStartTrip = timeOfStartTrip,
+		//		TimeOfEndTrip = timeOfEndTrip,
+		//		EndTripDayOfWeek = endDayOfWeek,
+		//		EndTripDeparture = endDate.ToDateTime(endDepartureTime),
+		//		EndTripArrival = endDate.ToDateTime(endArrivalTime),
+		//		StartTripPrice = startTripPrice,
+		//		EndTripPrice = endTripPrice,
+		//		Price = startTripPrice + endTripPrice  // Sum of both legs
+		//	};
 
-			foreach (var word in words)
-			{
-				if (word == "There") thereFlag = true;
-				if (word == "Back") backFlag = true;
-
-				if (thereFlag) there += word + " ";
-				if (backFlag) back += word + " ";
-
-				if (word == "zł\n\n")
-				{
-					thereFlag = false; backFlag = false;
-					if (there != null) there = there.Replace("\n", "");
-					if (back != null) back = back.Replace("\n", "");
-				}
-			}
-
-			return new FlightInfo(there, back);
-		}
+		//	return flightModel;
+		//}
 	}
 }

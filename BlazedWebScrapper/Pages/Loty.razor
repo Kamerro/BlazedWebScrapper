@@ -5,8 +5,16 @@
 
 <PageTitle>Loty</PageTitle>
 
+@* <p>Wpisz swój email, a wyślemy na niego najkorzystniejsze oferty lotów: @result</p>
+<!-- Pole tekstowe, gdzie użytkownik wprowadza tekst -->
+<input @bind="inputText" placeholder="Wpisz e-mail" />
 
-<p>This component demonstrates fetching data from a service.</p>
+<!-- Przycisk, który wywołuje metodę przesyłania danych -->
+<button @onclick="SubmitData">Prześlij</button>
+
+<!-- Wyświetlenie przesłanego tekstu --> *@
+
+
 
 @if (flights == null)
 {
@@ -17,7 +25,13 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Date</th>
+                <th>StartDestination</th>
+                <th>EndDestination</th>
+                <th>StartTripDeparture</th>
+                <th>StartTripArrival</th>
+                <th>EndTripDeparture</th>
+                <th>EndTripArrival</th>
+                <th>Price</th>
             </tr>
         </thead>
         <tbody>
@@ -25,6 +39,12 @@ else
             {
                 <tr>
                     <td>@flight.StartDestination</td>
+                    <td>@flight.EndDestination</td>
+                    <td>@flight.StartTripDeparture</td>
+                    <td>@flight.StartTripArrival</td>
+                    <td>@flight.EndTripDeparture</td>
+                    <td>@flight.EndTripArrival</td>
+                    <td>@flight.Price</td>
                 </tr>
             }
         </tbody>
@@ -34,8 +54,21 @@ else
 @code {
     private List<FlightModel> flights;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        flights = await FlightService.GetFlightsAsync();
+        flights = FlightService.GetFlights();
     }
+
+    // // Zmienna, która przechowuje wprowadzony tekst
+    // private string inputText = string.Empty;
+
+    // // Zmienna do wyświetlenia przesłanego tekstu
+    // private string result;
+
+    // // Metoda do przetwarzania danych
+    // private void SubmitData()
+    // {
+    //     // Tutaj możesz przesłać tekst dalej do logiki, np. do serwisu lub API
+    //     result = inputText;
+    // }
 }

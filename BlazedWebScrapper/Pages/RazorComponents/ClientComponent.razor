@@ -1,0 +1,14 @@
+﻿@using BlazedWebScrapper.Data;
+
+<p>@client.Name</p>
+<p>@client.ID</p>
+
+@code {
+    [Parameter]
+    public Client client { get; set; }
+    [Parameter]
+    public string Name { get; set; }
+
+    [Parameter]
+    public string ID { get; set; }
+}
