@@ -14,9 +14,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContext<WebScrapperDbContext>(
 	options => options.UseSqlServer(builder.Configuration.GetConnectionString("WebScrapper")));
-
 builder.Services.AddScoped<FlightService>();
-builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<IBasicWebScrapperSite,WebScrapperImplementation>();
 builder.Services.AddSingleton<IFactorySearcher, FactorySearcher>();
 builder.Services.AddTransient<BookService>();
