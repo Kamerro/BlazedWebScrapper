@@ -1,5 +1,4 @@
-﻿using BlazedWebScrapper.Data.Classes.Data;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace BlazedWebScrapper.Data.Classes.Services
 {

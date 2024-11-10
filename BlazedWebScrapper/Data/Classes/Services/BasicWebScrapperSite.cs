@@ -56,6 +56,11 @@ namespace BlazedWebScrapper.Data.Classes.Services
             return names;
         }
 
+        public string GetNameFromNode(HtmlNode node)
+        {
+            return node?.InnerHtml;
+        }
+
         public List<string> GetStringFromAttribute(List<HtmlNode> nodes, string attribute)
         {
             return nodes.Select(x => x.Attributes[attribute]?.Value).ToList();
@@ -133,6 +138,11 @@ namespace BlazedWebScrapper.Data.Classes.Services
                 }
             }
             return innerNodes;
+        }
+
+        public HtmlNode GetFirstDescendantFromSingleNode(HtmlNode paginationNode, string htmlTag)
+        {
+            return paginationNode.Descendants(htmlTag).ToList()[0];
         }
     }
 }

@@ -1,14 +1,10 @@
 ﻿using BlazedWebScrapper.Data.Classes.BookHelpers;
 using BlazedWebScrapper.Data.Classes.Consts;
-using BlazedWebScrapper.Data.Classes.Data;
 using BlazedWebScrapper.Data.Classes.Extension_methods;
 using BlazedWebScrapper.Data.Classes.Queries;
 using BlazedWebScrapper.Data.Classes.Services;
 using BlazedWebScrapper.Data.Interfaces;
 using HtmlAgilityPack;
-using Microsoft.AspNetCore.Http.Extensions;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace BlazedWebScrapper.Data.Classes.Searchers
 {
