@@ -1,0 +1,42 @@
+﻿@using BlazedWebScrapper.Data.Classes.Configuration;
+<input type="checkBox" @onchange="ChangeStatusAndInvokeMethod" class="filterCheckBoxMaxPrice">
+<label class="filterLabelMaxPrice">Ustaw maksymalną cenę</label>
+<select @bind="MaxPrice" name="value" id="filteringMaxPrice">
+    <option value="1">1</option>
+    <option value="20">20</option>
+    <option value="50">50</option>
+    <option value="100">100</option>
+    <option value="200">200</option>
+    <option value="500">500</option>
+    <option value="1000">1000</option>
+</select>
+@code {
+
+    [Parameter]
+    public EventCallback TriggerMaxPriceChange { get; set; }
+
+    [Parameter]
+    public EventCallback<string> TriggerMaxPrice { get; set; }
+
+    private void ChangeStatusAndInvokeMethod()
+    {
+        TriggerMaxPriceChange.InvokeAsync();
+        StateHasChanged();
+    }
+
+    private void ChangeStatusPriceAndInvokeMethod()
+    {
+        TriggerMaxPrice.InvokeAsync();
+        StateHasChanged();
+    }
+    private bool isCheckedMaxPrice { get; set; }
+    public string MaxPrice
+    {
+        get => maxPrice;
+        set
+        {
+            TriggerMaxPrice.InvokeAsync(value); maxPrice = value;
+        }
+    }
+    private string maxPrice = "1";
+}

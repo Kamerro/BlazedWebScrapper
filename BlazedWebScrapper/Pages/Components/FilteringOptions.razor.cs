@@ -19,6 +19,15 @@ namespace BlazedWebScrapper.Pages.Components
             FSpec.MaxResults = isCheckedMaxResults ? _intMaxResults : 0;
             DataChangedTriggerFlow.InvokeAsync();
         }
+        public void ChangePriceFiltering()
+        {
+            isCheckedMaxPrice = !isCheckedMaxPrice;
+        }
+
+        public void ChangePrice(string value)
+        {
+            MaxPrice = value;
+        }
         [Parameter]
         public EventCallback DataChangedTriggerFlow { get; set; }
 
@@ -38,7 +47,6 @@ namespace BlazedWebScrapper.Pages.Components
                 }
             }
         }
-
         public string MaxPrice
         {
             get => _intMaxPrice.ToString();
@@ -51,6 +59,5 @@ namespace BlazedWebScrapper.Pages.Components
                 }
             }
         }
-
     }
 }

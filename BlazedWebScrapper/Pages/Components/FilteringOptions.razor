@@ -14,17 +14,7 @@
             <option value="200">200</option>
         </select>
         <br />
-        <input type="checkBox" @onchange="@(()=>{isCheckedMaxPrice = !isCheckedMaxPrice;})" class="filterCheckBoxMaxPrice">
-        <label class="filterLabelMaxPrice">Ustaw maksymalną cenę</label>
-        <select @bind=MaxPrice name="value" id="filteringMaxPrice">
-            <option value="1">1</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-            <option value="200">200</option>
-            <option value="500">500</option>
-            <option value="1000">1000</option>
-        </select>
+        <MaxPriceFilterComponent TriggerMaxPriceChange="ChangePriceFiltering" TriggerMaxPrice="ChangePrice"></MaxPriceFilterComponent>
         <br />
         <br />
         <button @onclick="SaveChanges" class="buttonSaveChanges">Zapisz zmiany</button>
