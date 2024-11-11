@@ -58,7 +58,7 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
             string baseURL = webScrapperImplementation.FullUrlToReadFrom;
             for (int i = 1; i <= paginationText; i++)
             {
-                if (bookServiceList.FullListOfBooksWN.Count < bookServiceList.filterSpecification.MaxResults)
+                if ((bookServiceList.FullListOfBooksWN.Count < bookServiceList.filterSpecification.MaxResults) || bookServiceList.filterSpecification.MaxResults == 0)
                 {
                     webScrapperImplementation.FullUrlToReadFrom = baseURL + $"/{i}";
                     Books = bookDataExtraction.ExtractBooksWN(doc);
