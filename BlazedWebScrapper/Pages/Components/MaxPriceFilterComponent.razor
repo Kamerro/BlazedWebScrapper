@@ -10,33 +10,3 @@
     <option value="500">500</option>
     <option value="1000">1000</option>
 </select>
-@code {
-
-    [Parameter]
-    public EventCallback TriggerMaxPriceChange { get; set; }
-
-    [Parameter]
-    public EventCallback<string> TriggerMaxPrice { get; set; }
-
-    private void ChangeStatusAndInvokeMethod()
-    {
-        TriggerMaxPriceChange.InvokeAsync();
-        StateHasChanged();
-    }
-
-    private void ChangeStatusPriceAndInvokeMethod()
-    {
-        TriggerMaxPrice.InvokeAsync();
-        StateHasChanged();
-    }
-    private bool isCheckedMaxPrice { get; set; }
-    public string MaxPrice
-    {
-        get => maxPrice;
-        set
-        {
-            TriggerMaxPrice.InvokeAsync(value); maxPrice = value;
-        }
-    }
-    private string maxPrice = "1";
-}
