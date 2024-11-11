@@ -20,12 +20,12 @@ namespace BlazedWebScrapper.Pages
 
         [Inject]
         public BookService bookService { get; set; }
+
         FilteringSpecification filtering = new FilteringSpecification();
         private ISearcherBooks searcherBooksCzytelnik;
         private ISearcherBooks searcherBooksPWN;
         private ISearcherBooks searcherBooksNiezwykle;
         private ISearcherBooks searcherBooksNaszaKsiegarnia;
-
         private bool isSearchDone = default;
         private TabConfigurator tabConfigurator;
         private ConstsBookScrapper consts;
@@ -33,10 +33,8 @@ namespace BlazedWebScrapper.Pages
         private List<Book> listOfBooks;
         private Query query;
         private bool isRenderDone;
-        private void TriggerStatusChange()
-        {
-            StateHasChanged();
-        }
+        private void TriggerStatusChange() => StateHasChanged();
+
         void SearchPredefinedBook(string inputValue)
         {
             bookService.FullListOfBooks.Clear();
