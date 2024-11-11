@@ -5,6 +5,7 @@ using BlazedWebScrapper.Data.Classes.Data;
 using BlazedWebScrapper.Data.Classes.Queries;
 using BlazedWebScrapper.Data.Classes.Services;
 using BlazedWebScrapper.Data.Interfaces;
+using BlazedWebScrapper.Pages.Components;
 using Microsoft.AspNetCore.Components;
 using System.Drawing;
 
@@ -39,6 +40,10 @@ namespace BlazedWebScrapper.Pages
         void SearchPredefinedBook(string inputValue)
         {
             bookService.FullListOfBooks.Clear();
+            bookService.FullListOfBooksPWN.Clear();
+            bookService.FullListOfBooksNK.Clear();
+            bookService.FullListOfBooksWN.Clear();
+            bookService.FullListOfBooksCzytelnik.Clear();
             searcherBooksNaszaKsiegarnia = factorySearcher.GetSearcher("Nasza", query, webScrapperImplementation,bookService);
             searcherBooksNaszaKsiegarnia.BuildFullUrlToSearch(inputValue, searchBook.Author.Name, searchBook.Title, consts.NaszaSite);
             searcherBooksNaszaKsiegarnia.SearchText();
@@ -51,8 +56,7 @@ namespace BlazedWebScrapper.Pages
             searcherBooksNiezwykle = factorySearcher.GetSearcher("Niezwykle", query, webScrapperImplementation, bookService);
             searcherBooksNiezwykle.BuildFullUrlToSearch(inputValue, searchBook.Author.Name, searchBook.Title, consts.NiezwykleSite);
             searcherBooksNiezwykle.SearchText();
-
-            bookService.FullListOfBooks = bookService.FullListOfBooks.OrderBy(x => x.Item2).ToList();
+            bookService.SortedListOfBooks = bookService.FullListOfBooks.OrderBy(x => x.Item2).ToList();
             isSearchDone = true;
         }
         protected override void OnInitialized()

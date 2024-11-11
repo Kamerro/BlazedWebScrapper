@@ -22,13 +22,14 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
         public IBasicWebScrapperSite webScrapperImplementation { get; set; }
         public BookService bookServiceList { get; set; }
         private BookQueryHelper queryBuilder;
-
+        BookDataExtraction bookDataExtraction;
         public NaszaKsiegarniaSearcher(Query _query, IBasicWebScrapperSite wsi, BookService bksrv)
         {
             query = _query;
             webScrapperImplementation = wsi;
             bookServiceList = bksrv;
             queryBuilder = new BookQueryHelper();
+            bookDataExtraction = new BookDataExtraction("NK", webScrapperImplementation);
         }
         public void BuildFullUrlToSearch(string inputValue, string authorName, string title, string siteName)
         {
@@ -46,52 +47,27 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
         {
             SetupForSearch();
             GenerateAllImportantInfoAboutBooks();
-            LinkService linkService = new LinkService(Links, consts.NaszaKsiegarniaBase);
-            linkService.GenerateLinks();
-            bookServiceList.GenerateFullListOfBooks(Books, Authors, Links, Prices);
-
         }
 
         private void GenerateAllImportantInfoAboutBooks()
         {
-            Books = ExtractBooks();
-            Prices = ExtractPrices();
-            Authors = ExtractAuthors();
-            Links = ExtractLinks();
-        }
-        private List<string> ExtractLinks()
-        {
-            var LinkNodes = webScrapperImplementation.AllNodes(doc, "fixed", "class", "article");
-            LinkNodes = webScrapperImplementation.GetFirstDescendant(LinkNodes, "h2");
-            LinkNodes = webScrapperImplementation.GetFirstDescendant(LinkNodes, "a");
-            return webScrapperImplementation.GetStringFromAttribute(LinkNodes, "href");
-
-        }
-        private List<string> ExtractAuthors()
-        {
-            var AuthorNameNodes = webScrapperImplementation.AllNodes(doc, "fixed", "class", "article");
-            AuthorNameNodes = webScrapperImplementation.GetFirstDescendant(AuthorNameNodes, "h4");
-            AuthorNameNodes = webScrapperImplementation.GetFirstDescendant(AuthorNameNodes, "span");
-            AuthorNameNodes = webScrapperImplementation.GetFirstDescendant(AuthorNameNodes, "a");
-            Authors = webScrapperImplementation.GetNamesFromNodes(AuthorNameNodes);
-            return Authors.LeaveOnlyAuthorName();
-        }
-        private List<string> ExtractBooks()
-        {
-            var BooksNodes = webScrapperImplementation.AllNodes(doc, "fixed", "class", "article");
-            BooksNodes = webScrapperImplementation.GetFirstDescendant(BooksNodes, "h2");
-            BooksNodes = webScrapperImplementation.GetFirstDescendant(BooksNodes, "a");
-            return webScrapperImplementation.GetNamesFromNodes(BooksNodes);
-        }
-        private List<string> ExtractPrices()
-        {
-            List<HtmlNode> nodePricesDiv = webScrapperImplementation.AllNodes(doc, "price", "class", "section");
-            List<HtmlNode> nodePricesValue = webScrapperImplementation.GetDescandant(nodePricesDiv, "span", 1);
-            if (nodePricesValue.Count == 0)
+            var paginationText = bookDataExtraction.GetPaginationNK(doc);
+            string baseURL = webScrapperImplementation.FullUrlToReadFrom;
+            for (int i = 1; i <= paginationText; i++)
             {
-                nodePricesValue = webScrapperImplementation.GetDescandant(nodePricesDiv, "span", 0);
+                if (bookServiceList.FullListOfBooksNK.Count < bookServiceList.filterSpecification.MaxResults)
+                {
+                    webScrapperImplementation.FullUrlToReadFrom = baseURL + $"/{i}";
+                    Books = bookDataExtraction.ExtractBooksNK(doc);
+                    Prices = bookDataExtraction.ExtractPricesNK(doc);
+                    Authors = bookDataExtraction.ExtractAuthorsNK(doc);
+                    Links = bookDataExtraction.ExtractLinksNK(doc);
+                    LinkService linkService = new LinkService(Links, consts.NaszaKsiegarniaBase);
+                    linkService.GenerateLinks();
+                    bookServiceList.GenerateFullListOfBooksForNK(Books, Authors, Links, Prices);
+                }
             }
-            return webScrapperImplementation.GetNamesFromNodes(nodePricesValue);
         }
+
     }
 }

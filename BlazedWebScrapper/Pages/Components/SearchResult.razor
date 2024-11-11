@@ -1,0 +1,13 @@
+﻿@using BlazedWebScrapper.Data.Classes.Services;
+
+<input type="checkbox" @bind="isSortHaveToBeShow" />
+<label>Naciśnij jeżeli chcesz zobaczyć posortowaną listę względem ceny!</label>
+<ListOfSortedBooks FullListOfBooks="BookService.SortedListOfBooks" IsSortHaveToBeShow="isSortHaveToBeShow"></ListOfSortedBooks>
+<ListOfBooks FullListOfBooks="BookService.FullListOfBooks" IsSortHaveToBeShow="isSortHaveToBeShow"></ListOfBooks>
+
+@code {
+    [Parameter]
+    public BookService BookService { get; set; }
+
+    private bool isSortHaveToBeShow;
+}

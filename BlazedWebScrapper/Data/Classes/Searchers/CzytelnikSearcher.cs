@@ -5,9 +5,6 @@ using BlazedWebScrapper.Data.Classes.Queries;
 using BlazedWebScrapper.Data.Classes.Services;
 using BlazedWebScrapper.Data.Interfaces;
 using HtmlAgilityPack;
-using Microsoft.AspNetCore.Http.Extensions;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace BlazedWebScrapper.Data.Classes.Searchers
 {
@@ -25,18 +22,21 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
         public IBasicWebScrapperSite webScrapperImplementation { get; set; }
         public BookService bookServiceList { get; set; }
         private BookQueryHelper queryBuilder;
+        BookDataExtraction bookDataExtraction;
+
         public CzytelnikSearcher(Query _query, IBasicWebScrapperSite wsi, BookService bksrv)
         {
             query = _query;
             webScrapperImplementation = wsi;
             bookServiceList = bksrv;
             queryBuilder = new BookQueryHelper();
+            bookDataExtraction = new BookDataExtraction("Czytelnik", webScrapperImplementation);
         }
         public void BuildFullUrlToSearch(string inputValue, string authorName, string title, string siteName)
         {
             query.ObjectOfInterest = queryBuilder.BuildObjectOfInterest(inputValue, authorName, title);
             query.UrlWithSiteName = siteName;
-            webScrapperImplementation.FullUrlToReadFrom = $"{query.UrlWithSiteName}{query.ObjectOfInterest}/1/phot/5?url={query.ObjectOfInterest}";
+            webScrapperImplementation.FullUrlToReadFrom = $"{query.UrlWithSiteName}{query.ObjectOfInterest}";
         }
         private void SetupForSearch()
         {
@@ -48,39 +48,25 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
         {
             SetupForSearch();
             GenerateAllImportantInfoAboutBooks();
-            LinkService linkService = new LinkService(Links, consts.CzytelnikBase);
-            linkService.GenerateLinks();
-            bookServiceList.GenerateFullListOfBooks(Books, Authors, Links, Prices);
         }
-
         private void GenerateAllImportantInfoAboutBooks()
         {
-            Books = ExtractBooks();
-            Prices = ExtractPrices();
-            Authors = ExtractAuthors();
-            Links = ExtractLinks();
-        }
-        private List<string> ExtractLinks()
-        {
-            var linkNode = webScrapperImplementation.AllNodes(doc, "prodname f-row", "class", "a");
-            return webScrapperImplementation.GetStringFromAttribute(linkNode, "href");
-        }
-        private List<string> ExtractAuthors()
-        {
-            var AuthorNameNodes = webScrapperImplementation.AllNodes(doc, "brand", "class", "a");
-            Authors = webScrapperImplementation.GetNamesFromNodes(AuthorNameNodes);
-            return Authors.LeaveOnlyAuthorName();
-        }
-        private List<string> ExtractBooks()
-        {
-            var BooksNodes = webScrapperImplementation.AllNodes(doc, "productname", "class", "span");
-            return webScrapperImplementation.GetNamesFromNodes(BooksNodes);
-        }
-        private List<string> ExtractPrices()
-        {
-            List<HtmlNode> nodePricesDiv = webScrapperImplementation.AllNodes(doc, "price f-row", "class", "div");
-            List<HtmlNode> nodePricesValue = webScrapperImplementation.GetFirstDescendant(nodePricesDiv, "em");
-            return webScrapperImplementation.GetNamesFromNodes(nodePricesValue);
+            var paginationText = bookDataExtraction.GetPaginationCzytelnik(doc);
+            string baseURL = webScrapperImplementation.FullUrlToReadFrom;
+            for (int i = 1; i <= paginationText; i++)
+            {
+                if (bookServiceList.FullListOfBooksCzytelnik.Count < bookServiceList.filterSpecification.MaxResults)
+                {
+                    webScrapperImplementation.FullUrlToReadFrom = baseURL + $"/{i}";
+                    Books = bookDataExtraction.ExtractBooksCzytelnik(doc);
+                    Prices = bookDataExtraction.ExtractPricesCzytelnik(doc);
+                    Authors = bookDataExtraction.ExtractAuthorsCzytelnik(doc);
+                    Links = bookDataExtraction.ExtractLinksCzytelnik(doc);
+                    LinkService linkService = new LinkService(Links, consts.CzytelnikBase);
+                    linkService.GenerateLinks();
+                    bookServiceList.GenerateFullListOfBooksForCzytelnik(Books, Authors, Links, Prices);
+                }
+            }
         }
     }
 }
