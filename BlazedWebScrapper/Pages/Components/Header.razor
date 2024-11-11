@@ -6,7 +6,7 @@
     </div>
     <div style="margin-left:30%;width:100%">
         <input type="text" style="width:30%;height:60px; margin-bottom:30px" placeholder="@AuthorName @Title" @bind="@InputValue" @oninput="@(()=> OnInputEvent.InvokeAsync())" />
-        <button type="button" @onclick="@(async () => await SearchPredefinedBook.InvokeAsync(InputValue))"><img src="css/open-iconic/font/fonts/searchIcon.png"></button>
+        <button type="button" @onclick="@(async () => await SearchPredefinedBook.InvokeAsync(Uri.EscapeDataString(InputValue)))"><img src="css/open-iconic/font/fonts/searchIcon.png"></button>
     </div>
 </div>
 
