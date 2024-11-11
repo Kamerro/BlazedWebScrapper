@@ -17,7 +17,11 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
             webScrapperImplementation = wsi;
             bookServiceList = bksrv;
             queryBuilder = new BookQueryHelper();
+            bookDataExtraction = new BookDataExtraction("WN", webScrapperImplementation);
+
         }
+        BookDataExtraction bookDataExtraction;
+
         HtmlDocument doc;
         HtmlWeb web;
         ConstsBookScrapper consts = new ConstsBookScrapper();
@@ -47,42 +51,25 @@ namespace BlazedWebScrapper.Data.Classes.Searchers
         {
             SetupForSearch();
             GenerateAllImportantInfoAboutBooks();
-            LinkService linkService = new LinkService(Links, consts.NiezwykleBase);
-            linkService.GenerateLinks();
-            bookServiceList.GenerateFullListOfBooks(Books, Authors, Links, Prices);
         }
         private void GenerateAllImportantInfoAboutBooks()
         {
-            Books = ExtractBooks();
-            Prices = ExtractPrices();
-            Authors = ExtractAuthors();
-            Links = ExtractLinks();
-        }
-        private List<string> ExtractLinks()
-        {
-            var LinkNodes = webScrapperImplementation.AllNodes(doc, "row touchwrap", "class", "div");
-            LinkNodes = webScrapperImplementation.GetDescendantsWhereAttributeContains(LinkNodes, "div", "class", "product-box");
-            LinkNodes = webScrapperImplementation.GetDescandant(LinkNodes, "a", 1);
-            return webScrapperImplementation.GetStringFromAttribute(LinkNodes, "href");
-        }
-        private List<string> ExtractAuthors()
-        {
-            var AuthorsNodes = webScrapperImplementation.AllNodes(doc, "desc", "class", "div");
-            AuthorsNodes = webScrapperImplementation.GetFirstDescendant(AuthorsNodes, "p");
-            AuthorsNodes = webScrapperImplementation.GetFirstDescendant(AuthorsNodes, "a");
-            return webScrapperImplementation.GetNamesFromNodes(AuthorsNodes);
-        }
-        private List<string> ExtractBooks()
-        {
-            var BooksNodes = webScrapperImplementation.AllNodes(doc, "row touchwrap", "class", "div");
-            BooksNodes = webScrapperImplementation.GetAllDescendant(BooksNodes, "h6");
-            return webScrapperImplementation.GetNamesFromNodes(BooksNodes);
-        }
-        private List<string> ExtractPrices()
-        {
-            List<HtmlNode> nodePricesValues = webScrapperImplementation.AllNodes(doc, "cena-box", "class", "div");
-            nodePricesValues = webScrapperImplementation.GetFirstDescendant(nodePricesValues, "p", "span", "strike");
-            return webScrapperImplementation.GetNamesFromNodes(nodePricesValues);
+            var paginationText = bookDataExtraction.GetPaginationWN(doc);
+            string baseURL = webScrapperImplementation.FullUrlToReadFrom;
+            for (int i = 1; i <= paginationText; i++)
+            {
+                if (bookServiceList.FullListOfBooksWN.Count < bookServiceList.filterSpecification.MaxResults)
+                {
+                    webScrapperImplementation.FullUrlToReadFrom = baseURL + $"/{i}";
+                    Books = bookDataExtraction.ExtractBooksWN(doc);
+                    Prices = bookDataExtraction.ExtractPricesWN(doc);
+                    Authors = bookDataExtraction.ExtractAuthorsWN(doc);
+                    Links = bookDataExtraction.ExtractLinksWN(doc);
+                    LinkService linkService = new LinkService(Links, consts.NiezwykleBase);
+                    linkService.GenerateLinks();
+                    bookServiceList.GenerateFullListOfBooksForWN(Books, Authors, Links, Prices);
+                }
+            }
         }
     }
 }
