@@ -15,8 +15,8 @@ namespace BlazedWebScrapper.Pages.Components
         }
         public void SaveChanges()
         {
-            FSpec.MaxPrice = isCheckedMaxPrice ? _intMaxPrice : 0;
-            FSpec.MaxResults = isCheckedMaxResults ? _intMaxResults : 0;
+            FSpec.MaxPrice = isCheckedMaxPrice ? int.Parse(MaxPrice) : 0;
+            FSpec.MaxResults = isCheckedMaxResults ? int.Parse(MaxBooksFromSite) : 0;
             DataChangedTriggerFlow.InvokeAsync();
         }
         public void ChangePriceFiltering()
